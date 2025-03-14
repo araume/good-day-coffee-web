@@ -2,31 +2,53 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-size: 6px;
+    overflow-y: hidden;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 #title{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: inline;
-    margin: 4vh 0 0 5vw;
+    font-size: 4em;
+    margin: 3.5vh 0 3.5vh 5vw;
 }
 .nav-bar{
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     display: flex;
-    background-color: antiquewhite;
+    background-color: burlywood;
     min-height: 10vh;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    position: relative;
+    z-index: 10;
 }
 nav .links{
-    margin-top: 2em;
-    margin-left: auto;
-    margin-right: 5vw;
+    margin: 3.5vh 5vw 3.5vh auto;
 }
 nav a{
     font-size: 15pt;
     text-decoration: none;
     color: black;
-    border: 2px solid red;
+    margin: 20px;
 }
-#left{
-    background-color: burlywood;
-    width: 50vw;
-    height: auto;
+.container{
+    cursor: pointer;
+    display: flex;
+}
+.cont {
+    background-color: #FFF7F2;
+    width: 50%;
+    height: 90vh;
+}
+.container a{
+    text-decoration: none;
+    color: black;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.right{
+    margin-left: auto;
+}
+h2{
+    margin-top: 10vh;
+    text-align: center;
+    font-size: 5rem;
 }
