@@ -1,0 +1,85 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-size: 6px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body{
+    background-color: #FFF7F2;
+}
+/* Nav */
+#title{
+    display: inline;
+    font-size: 4em;
+    margin: 3.5vh 0 3.5vh 5vw;
+}
+.nav-bar{
+    display: flex;
+    background-color: burlywood;
+    min-height: 10vh;
+}
+nav .links{
+    display: block;
+    margin-left: auto;
+    margin-right: 5vw;
+}
+nav a{
+    font-size: 15pt;
+    text-decoration: none;
+    display: inline-block;
+    height: 10vh;
+    color: black;
+    padding: 3vh 2vw 0 2vw;
+    transition: 0.3s;
+}
+nav a:hover{
+    background-color: rgb(196, 161, 115);
+}
+
+/* Content */
+.container{
+    height: 70vh;
+    width: auto;
+    margin: 5vh 5vw;
+}
+.container-one{
+    display: inline-block;
+    margin: 4vh 3vw 4vh 3vw;
+}
+.container-one select{
+    width: 15vw;
+    height: 3vh;
+    border-radius: 5px;
+    border: none;
+    background-color: blanchedalmond;
+}
+.container-two{
+    display: flex;
+}
+.lesson-table{
+    width: 15vw;
+    min-width: 200px;
+    height: 54vh;
+    margin: 0vh 3vw 4vh 3vw;
+    background-color: white;
+}
+.lesson-content{
+    display: inline-block;
+    width: 65vw;
+    margin-right: 2vw;
+    height: 54vh;
+    background-color: white;
+}
+.lesson-content, .lesson-table{
+    border-radius: 7px;
+    box-shadow: 4px 5px 8px rgb(0, 0, 0, 0.2);
+}
+
+/* Footer */
+footer{
+    display: inline-block;
+    background-color: burlywood;
+    height: 20vh;
+    width: 100%;
+}
