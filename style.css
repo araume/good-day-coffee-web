@@ -3,8 +3,11 @@
     padding: 0;
     box-sizing: border-box;
     font-size: 6px;
-    overflow-y: hidden;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+body{
+    background-color: #FFF7F2;
+    overflow-y: hidden;
 }
 #title{
     display: inline;
@@ -15,9 +18,8 @@
     display: flex;
     background-color: burlywood;
     min-height: 10vh;
-    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
     position: relative;
-    z-index: 10;
+
 }
 nav .links{
     margin: 3.5vh 5vw 3.5vh auto;
@@ -29,26 +31,50 @@ nav a{
     margin: 20px;
 }
 .container{
-    cursor: pointer;
     display: flex;
+    height: 70vh;
 }
-.cont {
-    background-color: #FFF7F2;
+.cont{
     width: 50%;
-    height: 90vh;
 }
-.container a{
-    text-decoration: none;
-    color: black;
-    display: block;
-    width: 100%;
-    height: 100%;
+.cont.left{
+    background-image: url('img/cup-coffee-min.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
 }
-.right{
+.cont.right{
     margin-left: auto;
 }
-h2{
-    margin-top: 10vh;
+.pages{
+    padding-top: 20vh;
+    display: block;
     text-align: center;
-    font-size: 5rem;
+}
+.cont h2{
+    text-align: center;
+    font-size: 4em;
+    margin-top: 10vh;
+}
+.cont a{
+    text-decoration: none;
+    color: #FFF7F2;
+    background-color: #deb887;
+    width: 50%;
+    height: 5vh;
+    padding: 1.5vh 0 1vh 0;
+    margin: 10px auto;
+    display: block;
+    font-size: 3em;
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,.3);
+    border-radius: 10px;
+    transition: 0.2s;
+}
+.cont a:hover{
+    background-color: #c09e72;
+}
+
+footer{
+    background-color: burlywood;
+    height: 20vh;
+    width: 100%;
 }
