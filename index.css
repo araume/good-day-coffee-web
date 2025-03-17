@@ -88,7 +88,7 @@ nav .links{
 footer{
     background-color: burlywood;
     height: 60vh;
-    width: 100%;
+    width: 100vw;
 }
 .footer-links{
     display: flex;
