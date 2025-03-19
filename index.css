@@ -89,16 +89,24 @@ footer{
     background-color: burlywood;
     height: 60vh;
     width: 100%;
+    min-height: fit-content;
+    padding-bottom: 10vh;
 }
 .footer-links{
     display: flex;
+    border: 2px solid blue;
+    flex-wrap: wrap;
+    padding-left: 5vw;
 }
 .details, .dev, .services, .about{
+    border: 2px solid red;
+    flex: 1 1 auto;
     display: inline-block;
     height: fit-content;
 }
 .details{
-    margin: 8vh 7vw 0 5vw;
+    margin: 8vh 7vw 0 0;
+    flex-grow: 20;
 }
 .details h3{
     font-size: 4em;
