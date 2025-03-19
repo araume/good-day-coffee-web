@@ -94,12 +94,10 @@ footer{
 }
 .footer-links{
     display: flex;
-    border: 2px solid blue;
     flex-wrap: wrap;
     padding-left: 5vw;
 }
 .details, .dev, .services, .about{
-    border: 2px solid red;
     flex: 1 1 auto;
     display: inline-block;
     height: fit-content;
