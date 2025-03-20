@@ -3,64 +3,37 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Good day coffee</title>
+        <title>Good day coffee - Login</title>
         <link rel="stylesheet" href="index.css">
     </head>
     <body>
-        <nav class="nav-bar">
-            <a href="index.html" id="title">Good Day Coffee</a>
-            <span class="nav links">
-                <a href="management.html">Management</a>
-                <a href="profile.html">Profile</a>
-                <a href="Help.html">Help</a>
-                <a href="about.html">About us</a>
-                <a href="logout.html">Logout</a>
-            </span>
-        </nav>
         <div class="container">
-            <div class="cont left">
+            <div class="left">
+                <h1>Welcome</h1>
+                <h2>to Good Day Coffee, training workbook and recipe catalogue</h2>
             </div>
-            <div class="cont right">
-                <h2>
-                    Welcome to Good Day Coffee website!
-                </h2>
-                <div class="container pages">
-                    <a href="workbook.html">Workbook</a>
-                    <a href="recipe.html">Recipes</a>
-                </div>
+            <div class="right">
+                <h1>Login</h1>
+                <form action="login.js" method="POST">
+                    <input type="text" placeholder="Email">
+                    <input type="password" placeholder="Password">
+                    <div class="show-password">
+                        <input type="checkbox" id="show-password" onclick="togglePasswordVisibility()">
+                        <label for="show-password">Show Password</label>
+                    </div>
+                    <button type="submit">Login</button>
+                    <script>
+                        function togglePasswordVisibility() {
+                            var passwordInput = document.querySelector('input[type="password"]');
+                            if (passwordInput.type === "password") {
+                                passwordInput.type = "text";
+                            } else {
+                                passwordInput.type = "password";
+                            }
+                        }
+                    </script>
+                </form>
             </div>
         </div>
-        <footer>
-            <span class="footer-links">
-                <span class="details">
-                    <h3>Good Day Coffee</h3>
-                    <p>coffee shop</p>
-                </span>
-                <div class="dev">
-                    <h3>Developer</h3>
-                    <a href="https://github.com/araume">Github</a>
-                </div>
-                <div class="services">
-                    <h3>Services</h3>
-                    <a href="workbook.html">Workbook</a>
-                    <a href="recipe.html">Recipes</a>
-                </div>
-                <div class="about">
-                    <h3>About</h3>
-                    <a href="mailto:someone@example.com">Email</a>
-                    <a href="tel:+1234567890">Contact No.</a>
-                </div>
-            </span>
-            <div class="line"></div>
-            <span class="socials">
-                <a href="https://facebook.com"><img src="img/facebook-icon.png" alt=""></a>
-                <a href="https://instagram.com"><img src="img/vecteezy_instagram-logo-icon-social-media-icon_23741148.png" alt=""></a>
-                <a href="https:/x.com"><img src="img/vecteezy_social-media-x-logo-black-and-white-png_36623772.png" alt=""></a>
-                <a href="https://tiktok.com"><img src="img/vecteezy_tiktok-logo-icon_22227298.png" alt=""></a>
-            </span>
-            <div class="copyright">
-                <p>©Copyright. All rights reserved</p>
-            </div>
-        </footer>
     </body>
 </html>

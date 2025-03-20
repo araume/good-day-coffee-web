@@ -8,151 +8,120 @@ body{
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #FFF7F2;
 }
-/* Nav */
-#title{
-    display: inline-block;
-    font-size: 4em;
-    font-weight: bold;
-    margin-left: 2vw;
-    padding: 3vh 2vw 0 2vw;
-    color: black;
-    text-decoration: none;
-}
-.nav-bar{
-    text-decoration: none;
-    display: flex;
-    background-color: burlywood;
-    min-height: 10vh;
-}
-nav .links{
-    display: block;
-    margin-left: auto;
-    margin-right: 5vw;
-}
-.nav a{
-    font-size: 15pt;
-    text-decoration: none;
-    display: inline-block;
-    height: 10vh;
-    color: black;
-    padding: 3vh 2vw 0 2vw;
-    transition: 0.3s;
-}
-.links a:hover{
-    background-color: rgb(196, 161, 115);
-}
-/* Content */
 .container{
     display: flex;
-    height: 70vh;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-.cont{
-    width: 50%;
-}
-.cont.left{
-    background-image: url('img/cup-coffee-min.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-}
-.cont.right{
-    margin-left: auto;
-}
-.pages{
-    padding-top: 20vh;
-    display: block;
-    text-align: center;
-}
-.cont h2{
-    text-align: center;
-    font-size: 4em;
-    margin-top: 10vh;
-}
-.cont a{
-    text-decoration: none;
-    color: #FFF7F2;
-    background-color: #deb887;
-    width: 50%;
-    height: 5vh;
-    padding: 1.5vh 0 1vh 0;
-    margin: 10px auto;
-    display: block;
-    font-size: 3em;
-    box-shadow: 0 4px 10px 0 rgba(0,0,0,.3);
-    border-radius: 10px;
-    transition: 0.2s;
-}
-.cont a:hover{
-    background-color: #c09e72;
-}
-/* Footer */
-footer{
-    background-color: burlywood;
-    height: 60vh;
+.left, .right {
     width: 100%;
-    min-height: fit-content;
-    padding-bottom: 10vh;
+    height: 50%;
 }
-.footer-links{
+.left{
+    background-image: url(img/cup-coffee-min.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative; /* Ensure the h1 and h2 are positioned relative to .left */
+}
+.right{
+    background-color: #FFF7F2;
+    padding: 2em;
+    padding-top: 10vh;
+}
+
+@media (min-width: 768px) {
+    .container {
+        flex-direction: row;
+    }
+    .left, .right {
+        width: 50%;
+        height: 100%;
+    }
+    .right {
+        padding-top: 30vh;
+    }
+}
+.right h1{
+    font-size: 6em;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2em;
+}
+
+.right form{
     display: flex;
-    flex-wrap: wrap;
-    padding-left: 5vw;
+    flex-direction: column;
+    gap: 1em;
+    width: 40%;
+    margin: 0 auto;
 }
-.details, .dev, .services, .about{
-    flex: 1 1 auto;
-    display: inline-block;
-    height: fit-content;
+.right form input{
+    padding: 1em;
+    border: none;
+    border-radius: 0.5em;
+    background-color: #ffffff;
+    box-shadow: 5px 4px 10px 0 rgba(0, 0, 0, 0.1);
+    color: #000;
+    margin-bottom: 1em;
 }
-.details{
-    margin: 8vh 7vw 0 0;
-    flex-grow: 20;
+.right form input:focus{
+    outline: none;
 }
-.details h3{
+
+.right form input::placeholder{
+    color: #000;
+}
+
+.right form button{
+    padding: 1em;
+    border: none;
+    border-radius: 0.5em;
+    background-color: #000;
+    color: #fff;
+    width: 10vw;
+    cursor: pointer;
+    min-width: 70px;
+    margin: 0 auto;
+}
+
+.right form button:hover{
+    transition: 0.3s;
+    background-color: #333;
+    transform: scale(1.05);
+}
+.left h1, .left h2 {
+    color: #fff;
+    font-weight: bold;
+    position: absolute;
+    left: 3vw;
+}
+.left h1 {
+    font-size: 8em;
+    bottom: 15vh;
+    margin-bottom: 2vh;
+}
+.left h2 {
     font-size: 4em;
+    bottom: 10vh;
 }
-.details p{
-    margin: 1vh 0 0 0;
-    font-size: 3em;
-}
-.dev{
-    margin: 8vh 10vw 0 auto;
-}
-footer h3{
-    font-size: 4em;
-}
-footer a{
-    display: block;
-    margin: 1vh 0 0 0;
-    text-decoration: none;
-    color: black;
-    font-size: 3em;
-}
-.services{
-    margin: 8vh 10vw 0 0;
-}
-.about{
-    margin: 8vh 10vw 0 0;
-}
-.line{
-    background-color: black;
-    margin: 10vh auto;
-    height: 1px;
-    width: 90%;
-}
-.socials{
+.show-password {
     display: flex;
+    align-items: center;
     justify-content: center;
 }
-.socials a{
-    width: fit-content;
-    margin: 0 2vw 0 2vw;
-    height: auto;
+#show-password{
+    margin-right: 0.5em;
+    width: 1.5em;
+    height: 1.5em;
+    accent-color: #000;
 }
-.socials img{
-    width: 30px;
-    height: auto;
-}
-.copyright{
-    width: fit-content;
-    margin: 5vh auto;
-    font-size: 2em;
+
+.show-password label{
+    font-size: 2.5em;
+    color: #000;
+    font-weight: bold;
+    margin-bottom: 0.7em;
 }
