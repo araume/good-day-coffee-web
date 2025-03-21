@@ -93,21 +93,6 @@ body{
     background-color: #333;
     transform: scale(1.05);
 }
-.left h1, .left h2 {
-    color: black;
-    font-weight: bold;
-    position: absolute;
-    left: 3vw;
-}
-.left h1 {
-    font-size: 8em;
-    bottom: 15vh;
-    margin-bottom: 2vh;
-}
-.left h2 {
-    font-size: 4em;
-    bottom: 10vh;
-}
 .show-password {
     display: flex;
     align-items: center;
