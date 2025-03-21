@@ -30,6 +30,7 @@ body{
     background-color: #FFF7F2;
     padding: 2em;
     padding-top: 10vh;
+    height: 60vh;
 }
 
 @media (min-width: 768px) {
