@@ -113,58 +113,149 @@ body{
     }
 }
 
-/* Content */
 .container{
+    max-width: 800px;
+    margin: 5rem auto;
+    padding: 0 1rem;
+}
+/* Profile Section Styles */
+.profile-section {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.profile-header {
     display: flex;
-    height: 70vh;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
 }
-.cont{
-    width: 50%;
+
+.profile-image {
+    text-align: center;
 }
-.cont.left{
-    background-image: url('img/cup-coffee-min.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 3px solid #4a90e2;
 }
-.cont.right{
-    margin-left: auto;
+
+.change-photo-btn {
+    background-color: burlywood;
+    color: black;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 1rem 0;
 }
+
+.change-photo-btn:hover {
+    background-color: rgb(196, 161, 115);
+}
+
+.profile-info h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.profile-info p {
+    margin: 0.5rem 0 0;
+    color: #666;
+    font-size: 1rem;
+}
+
+.profile-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.detail-group {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.detail-group label {
+    display: block;
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.detail-group p {
+    margin: 0;
+    color: #333;
+    font-size: 1.1rem;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin: 2rem 0;
+}
+
+.edit-profile-btn,
+.save-profile-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.edit-profile-btn {
+    background-color: burlywood;
+    color: black;
+    border: 1px solid rgb(196, 161, 115);
+}
+
+.edit-profile-btn:hover {
+    background-color: rgb(196, 161, 115);
+}
+
+.save-profile-btn {
+    background-color: burlywood;
+    color: black;
+}
+
+.save-profile-btn:hover {
+    background-color: rgb(196, 161, 115);
+}
+
+/* Responsive Design */
 @media (max-width: 768px) {
-    .container{
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-details {
+        grid-template-columns: 1fr;
+    }
+
+    .profile-actions {
         flex-direction: column;
     }
-    .cont{
+
+    .edit-profile-btn,
+    .save-profile-btn {
         width: 100%;
-        height: 50vh;
     }
-}
-.pages{
-    padding-top: 20vh;
-    display: block;
-    text-align: center;
-}
-.cont h2{
-    text-align: center;
-    font-size: 4em;
-    margin-top: 10vh;
-}
-.cont a{
-    text-decoration: none;
-    color: white;
-    background-color: black;
-    width: 50%;
-    height: 5vh;
-    padding: 1.5vh 0 1vh 0;
-    margin: 10px auto;
-    display: block;
-    font-size: 3em;
-    box-shadow: 0 4px 10px 0 rgba(0,0,0,.3);
-    border-radius: 10px;
-    transition: 0.2s;
-}
-.cont a:hover{
-    background-color: white;
-    color: black;
 }
 /* Footer */
 footer{

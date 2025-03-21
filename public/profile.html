@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Good day coffee</title>
-        <link rel="stylesheet" href="home.css">
+        <link rel="stylesheet" href="profile.css">
     </head>
     <body>
         <nav class="nav-bar">
@@ -23,15 +23,38 @@
             </div>
         </nav>
         <div class="container">
-            <div class="cont left">
-            </div>
-            <div class="cont right">
-                <h2>
-                    Welcome to Good Day Coffee website!
-                </h2>
-                <div class="container pages">
-                    <a href="workbook.html">Workbook</a>
-                    <a href="recipe.html">Recipes</a>
+            <div class="profile-section">
+                <div class="profile-header">
+                    <div class="profile-image">
+                        <img src="img/default-profile.png" alt="Profile Picture" id="profile-picture">
+                        <button class="change-photo-btn">Change Photo</button>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="user-name">User Name</h2>
+                        <p id="user-status">Status: Active</p>
+                    </div>
+                </div>
+                <div class="profile-details">
+                    <div class="detail-group">
+                        <label>Contact Number:</label>
+                        <p id="contact-number">+1234567890</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Email:</label>
+                        <p id="email">user@example.com</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Gender:</label>
+                        <p id="gender">Male</p>
+                    </div>
+                    <div class="detail-group">
+                        <label>Age:</label>
+                        <p id="age">25</p>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="edit-profile-btn">Edit Profile</button>
+                    <button class="save-profile-btn">Save Changes</button>
                 </div>
             </div>
         </div>
