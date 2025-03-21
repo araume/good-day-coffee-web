@@ -57,6 +57,15 @@ nav .links{
 .cont.right{
     margin-left: auto;
 }
+@media (max-width: 768px) {
+    .container{
+        flex-direction: column;
+    }
+    .cont{
+        width: 100%;
+        height: 50vh;
+    }
+}
 .pages{
     padding-top: 20vh;
     display: block;
@@ -69,8 +78,8 @@ nav .links{
 }
 .cont a{
     text-decoration: none;
-    color: #FFF7F2;
-    background-color: #deb887;
+    color: white;
+    background-color: black;
     width: 50%;
     height: 5vh;
     padding: 1.5vh 0 1vh 0;
@@ -82,7 +91,8 @@ nav .links{
     transition: 0.2s;
 }
 .cont a:hover{
-    background-color: #c09e72;
+    background-color: white;
+    color: black;
 }
 /* Footer */
 footer{

@@ -81,6 +81,7 @@ nav .links{
     display: flex;
     padding: 2vh 0 0 0;
     flex-wrap: wrap;
+    justify-content: center;
     border: 2px solid red;
     height: auto;
 }

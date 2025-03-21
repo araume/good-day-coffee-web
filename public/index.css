@@ -20,7 +20,7 @@ body{
     height: 50%;
 }
 .left{
-    background-image: url(img/cup-coffee-min.jpg);
+    background-image: url(img/gd-coffee.jpeg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -94,7 +94,7 @@ body{
     transform: scale(1.05);
 }
 .left h1, .left h2 {
-    color: #fff;
+    color: black;
     font-weight: bold;
     position: absolute;
     left: 3vw;
