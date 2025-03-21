@@ -24,11 +24,11 @@ mongoose.connect(MONGODB_URI)
         console.log(error);
     });
 
-app.use(express.static('./public'));  // This will serve files from your root directory
+app.use(express.static('./docs'));  // This will serve files from your root directory
 
 // Add this before your API routes to serve index.html at the root path
 app.get('/', (req, res) => {
-    res.sendFile('index.html', { root: './public' });
+    res.sendFile('index.html', { root: './docs' });
 });
 
 app.use('/api', userRoutes);
