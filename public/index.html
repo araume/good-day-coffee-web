@@ -13,26 +13,57 @@
             </div>
             <div class="right">
                 <h1>Login</h1>
-                <form action="login.js" method="POST">
-                    <input type="text" placeholder="Email">
-                    <input type="password" placeholder="Password">
+                <form id="loginForm">
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="password" placeholder="Password" required>
                     <div class="show-password">
                         <input type="checkbox" id="show-password" onclick="togglePasswordVisibility()">
                         <label for="show-password">Show Password</label>
                     </div>
-                    <button type="button" onclick="window.location.href='home.html'">Login</button>
-                    <script>
-                        function togglePasswordVisibility() {
-                            var passwordInput = document.querySelector('input[type="password"]');
-                            if (passwordInput.type === "password") {
-                                passwordInput.type = "text";
-                            } else {
-                                passwordInput.type = "password";
-                            }
-                        }
-                    </script>
+                    <button type="submit">Login</button>
+                    <p id="error-message" style="color: red; display: none;"></p>
                 </form>
             </div>
         </div>
+        <script>
+            function togglePasswordVisibility() {
+                var passwordInput = document.querySelector('input[type="password"]');
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                } else {
+                    passwordInput.type = "password";
+                }
+            }
+
+            document.getElementById('loginForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const errorMessage = document.getElementById('error-message');
+                
+                try {
+                    const response = await fetch('/api/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            email: formData.get('email'),
+                            password: formData.get('password')
+                        })
+                    });
+
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        const data = await response.json();
+                        errorMessage.textContent = data.message;
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    errorMessage.style.display = 'block';
+                }
+            });
+        </script>
     </body>
 </html>
