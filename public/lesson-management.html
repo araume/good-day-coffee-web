@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="workbook.css">
-        <title>Work book</title>
+        <link rel="stylesheet" href="lesson-management.css">
+        <title>Lesson Management</title>
     </head>
     <body>
         <nav class="nav-bar">
@@ -23,30 +23,28 @@
             </div>
         </nav>
         <div class="container">
-            <div class="lesson-selector">
-                <label for="lessondrop">Select Lesson:</label>
-                <div class="selector-container">
-                    <select name="Lesson" id="lessondrop">
-                        <option value="lesson1">Lesson 1</option>
-                        <option value="lesson2">Lesson 2</option>
-                        <option value="lesson3">Lesson 3</option>
-                    </select>
-                    <a href="lesson-management.html" class="manage-btn">Manage Lessons</a>
-                </div>
+            <div class="management-header">
+                <h1>Lesson Management</h1>
+                <button class="add-lesson-btn">Add New Lesson</button>
             </div>
-            <div class="lesson-container">
-                <aside class="lesson-table">
-                    <h2>Lesson Contents</h2>
-                    <ul class="lesson-list">
-                        <!-- Lesson table of contents will be populated here -->
-                    </ul>
-                </aside>
-                <main class="lesson-content">
-                    <h2>Lesson Content</h2>
-                    <div class="content-area">
-                        <!-- Lesson content will be populated here -->
+            <div class="lessons-grid">
+                <div class="lesson-card">
+                    <div class="lesson-card-header">
+                        <h3>Lesson 1</h3>
+                        <div class="card-actions">
+                            <button class="edit-btn">Edit</button>
+                            <button class="delete-btn">Delete</button>
+                        </div>
                     </div>
-                </main>
+                    <div class="lesson-card-content">
+                        <p>Introduction to Coffee Basics</p>
+                        <div class="lesson-stats">
+                            <span>Duration: 45 mins</span>
+                            <span>Topics: 5</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- More lesson cards will be added here -->
             </div>
         </div>
         <footer>
@@ -83,4 +81,4 @@
         </footer>
         <script src="nav.js"></script>
     </body>
-</html>
+</html> 
