@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Good day coffee</title>
         <link rel="stylesheet" href="profile.css">
+        <title>Profile</title>
     </head>
     <body>
         <nav class="nav-bar">
@@ -23,38 +23,80 @@
             </div>
         </nav>
         <div class="container">
-            <div class="profile-section">
+            <div class="profile-container">
                 <div class="profile-header">
-                    <div class="profile-image">
-                        <img src="img/default-profile.png" alt="Profile Picture" id="profile-picture">
-                        <button class="change-photo-btn">Change Photo</button>
-                    </div>
+                    <h1>My Profile</h1>
+                    <button id="editProfileBtn" class="edit-btn">Edit Profile</button>
+                </div>
+                <div class="profile-content">
                     <div class="profile-info">
-                        <h2 id="user-name">User Name</h2>
-                        <p id="user-status">Status: Active</p>
+                        <div class="info-group">
+                            <label>Name:</label>
+                            <span id="userName">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Email:</label>
+                            <span id="userEmail">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Phone:</label>
+                            <span id="userPhone">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Age:</label>
+                            <span id="userAge">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Gender:</label>
+                            <span id="userGender">Loading...</span>
+                        </div>
+                        <div class="info-group">
+                            <label>Status:</label>
+                            <span id="userStatus">Loading...</span>
+                        </div>
                     </div>
                 </div>
-                <div class="profile-details">
-                    <div class="detail-group">
-                        <label>Contact Number:</label>
-                        <p id="contact-number">+1234567890</p>
-                    </div>
-                    <div class="detail-group">
-                        <label>Email:</label>
-                        <p id="email">user@example.com</p>
-                    </div>
-                    <div class="detail-group">
-                        <label>Gender:</label>
-                        <p id="gender">Male</p>
-                    </div>
-                    <div class="detail-group">
-                        <label>Age:</label>
-                        <p id="age">25</p>
-                    </div>
-                </div>
-                <div class="profile-actions">
-                    <button class="edit-profile-btn">Edit Profile</button>
-                    <button class="save-profile-btn">Save Changes</button>
+            </div>
+
+            <!-- Edit Profile Modal -->
+            <div class="modal" id="editProfileModal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>Edit Profile</h2>
+                    <form id="editProfileForm">
+                        <div class="form-group">
+                            <label for="editName">Name:</label>
+                            <input type="text" id="editName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editPhone">Phone:</label>
+                            <input type="tel" id="editPhone" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editAge">Age:</label>
+                            <input type="number" id="editAge" name="age" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editGender">Gender:</label>
+                            <select id="editGender" name="gender" required>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password (leave blank to keep current):</label>
+                            <input type="password" id="newPassword" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password:</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword">
+                        </div>
+                        <div class="form-buttons">
+                            <button type="submit" class="save-btn">Save Changes</button>
+                            <button type="button" class="cancel-btn">Cancel</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -91,5 +133,6 @@
             </div>
         </footer>
         <script src="nav.js"></script>
+        <script src="js/profile.js"></script>
     </body>
 </html>

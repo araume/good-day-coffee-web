@@ -113,56 +113,314 @@ body{
     }
 }
 
-/* Content */
-.container{
-    height: fit-content;
-    width: auto;
-    padding: 5vh 5vw;
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
-.search{
-    width: auto;
-    height: 5vh;
+
+/* Header */
+.header {
     display: flex;
-    justify-content: center;
-    padding: 2px 0 0 0;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
-.search img{
-    width: 35px;
-    height: 35px;
-    margin-right: 0.5vw;
+
+.header h1 {
+    color: #333;
+    margin: 0;
+    font-size: 2.5rem;
 }
-.search input{
-    height: 4vh;
-    width: 20vw;
-    min-width: 300px;
-    border-radius: 5px;
+
+.add-recipe-btn {
+    background-color: #4CAF50;
+    color: white;
     border: none;
-    box-shadow: 4px 5px 8px rgb(0, 0, 0, 0.2);
-}
-.search select{
-    width: 5vw;
-    height: 4vh;
-    margin-left: 1vw;
-    border: none;
-    box-shadow: 4px 5px 8px rgb(0, 0, 0, 0.2);
-    background-color: white;
+    padding: 0.8rem 1.5rem;
     border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s;
 }
-.content{
+
+.add-recipe-btn:hover {
+    background-color: #45a049;
+}
+
+/* Recipe Grid */
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+    padding: 1rem 0;
+}
+
+.recipe-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.recipe-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.recipe-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.recipe-card h3 {
+    margin: 1rem;
+    color: #333;
+    font-size: 1.4rem;
+}
+
+.recipe-card .rating {
+    margin: 0 1rem 1rem;
+    color: #f39c12;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: relative;
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.close {
+    position: absolute;
+    right: 1.5rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #666;
+}
+
+.close:hover {
+    color: #333;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1.1rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);
+}
+
+.form-buttons {
     display: flex;
-    padding: 2vh 0 0 0;
-    flex-wrap: wrap;
-    justify-content: center;
-    border: 2px solid red;
-    height: auto;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
 }
-.content .recipe{
-    flex: 0 0 8vw;
-    border: 2px solid blue;
-    margin: 0.5%;
-    height: 20vh;
-    min-width: 150px;
+
+.save-btn,
+.cancel-btn {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
 }
+
+.save-btn {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+.cancel-btn {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-btn:hover {
+    background-color: #da190b;
+}
+
+/* Recipe Details Modal */
+.recipe-image {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+}
+
+.recipe-section {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.recipe-section h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+}
+
+.recipe-section ul,
+.recipe-section ol {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.recipe-section li {
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 1.5rem;
+}
+
+.rating-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.current-rating {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #f39c12;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.star {
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.3s;
+}
+
+.star:hover,
+.star.active {
+    color: #f39c12;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 1rem auto;
+    }
+
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .recipe-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .modal-content {
+        margin: 10% auto;
+        width: 95%;
+        padding: 1.5rem;
+    }
+
+    .form-buttons {
+        flex-direction: column;
+    }
+
+    .save-btn,
+    .cancel-btn {
+        width: 100%;
+    }
+
+    .header h1 {
+        font-size: 2rem;
+    }
+
+    .recipe-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .form-group label,
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        font-size: 1rem;
+    }
+
+    .modal-content h2 {
+        font-size: 2.5rem;
+    }
+
+    .recipe-section h3 {
+        font-size: 1.8rem;
+    }
+
+    .recipe-section li {
+        font-size: 1.8rem;
+    }
+}
+
 /* Footer */
 footer{
     background-color: burlywood;
@@ -234,4 +492,10 @@ footer a{
     width: fit-content;
     margin: 5vh auto;
     font-size: 2em;
+}
+
+.modal-content h2 {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+    color: #333;
 }

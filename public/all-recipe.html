@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Recipes</title>
+        <title>All Recipes - Good Day Coffee</title>
         <link rel="stylesheet" href="all-recipe.css">
     </head>
     <body>
@@ -23,62 +23,60 @@
             </div>
         </nav>
         <div class="container">
-            <div class="search">
-                <img src="img/search.png" alt="search-icon">
-                <input type="text" placeholder="Search">
-                <select name="filter" id="filter-drop">Filter</select>
+            <div class="header">
+                <h1>All Recipes</h1>
+                <button id="addRecipeBtn" class="add-recipe-btn">Add New Recipe</button>
             </div>
-            <div class="content">
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 1</h3>
-                    <p>Recipe 1 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 2</h3>
-                    <p>Recipe 2 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 3</h3>
-                    <p>Recipe 3 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 4</h3>
-                    <p>Recipe 4 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 5</h3>
-                    <p>Recipe 5 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 6</h3>
-                    <p>Recipe 6 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 7</h3>
-                    <p>Recipe 7 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 8</h3>
-                    <p>Recipe 8 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 9</h3>
-                    <p>Recipe 9 description</p>
-                </div>
-                <div class="recipe">
-                    <img src="img/recipe1.png" alt="recipe1">
-                    <h3>Recipe 10</h3>
-                    <p>Recipe 10 description</p>
-                </div>
+            <div id="recipeGrid" class="recipe-grid">
+                <!-- Recipe cards will be dynamically added here -->
+            </div>
+        </div>
+        <!-- Add Recipe Modal -->
+        <div id="recipeModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Add New Recipe</h2>
+                <form id="recipeForm">
+                    <div class="form-group">
+                        <label for="name">Recipe Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description (Optional):</label>
+                        <textarea id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="image">Image URL:</label>
+                        <input type="url" id="image" name="image" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ingredients">Ingredients (one per line):</label>
+                        <textarea id="ingredients" name="ingredients" rows="5" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="procedure">Procedure (one step per line):</label>
+                        <textarea id="procedure" name="procedure" rows="5" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="season">Season:</label>
+                        <select id="season" name="season" required>
+                            <option value="spring">Spring</option>
+                            <option value="summer">Summer</option>
+                            <option value="fall">Fall</option>
+                            <option value="winter">Winter</option>
+                        </select>
+                    </div>
+                    <div class="form-buttons">
+                        <button type="submit" class="save-btn">Save Recipe</button>
+                        <button type="button" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Recipe Details Modal -->
+        <div id="recipeDetailsModal" class="modal">
+            <div class="modal-content">
+                <!-- Recipe details will be dynamically added here -->
             </div>
         </div>
         <footer>
@@ -114,5 +112,6 @@
             </div>
         </footer>
         <script src="nav.js"></script>
+        <script src="js/recipe-management.js"></script>
     </body>
 </html>

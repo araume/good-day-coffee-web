@@ -1,13 +1,33 @@
 import express from 'express';
-import { login, logout } from '../controller/userController.js';
+import { 
+    login, 
+    logout, 
+    getAllUsers, 
+    createUser, 
+    updateUser, 
+    deleteUser,
+    getCurrentUser,
+    updateProfile 
+} from '../controller/userController.js';
 import { auth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// Auth routes
 router.post('/login', login);
 router.get('/logout', logout);
 
-// Protected routes
+// User management routes (protected)
+router.get('/users', auth, getAllUsers);
+router.post('/users', auth, createUser);
+router.put('/users/:id', auth, updateUser);
+router.delete('/users/:id', auth, deleteUser);
+
+// Profile routes
+router.get('/profile', auth, getCurrentUser);
+router.put('/profile', auth, updateProfile);
+
+// Protected page routes
 router.get('/home.html', auth, (req, res) => {
     res.sendFile('public/home.html', { root: '.' });
 });

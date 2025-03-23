@@ -313,4 +313,132 @@ footer a {
     .lessons-grid {
         grid-template-columns: 1fr;
     }
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2vh 2vw;
+    border-radius: 7px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    font-size: 1.8em;
+    margin-bottom: 2vh;
+    color: #333;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 2vh;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 1vh;
+    font-size: 1.1em;
+    color: #333;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 1vh 1vw;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.form-group textarea {
+    min-height: 10vh;
+    resize: vertical;
+}
+
+/* Quiz Questions */
+.quiz-question {
+    background-color: #f9f9f9;
+    padding: 2vh 2vw;
+    border-radius: 4px;
+    margin-bottom: 2vh;
+}
+
+.options-container {
+    margin: 1vh 0;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 1vw;
+    margin-bottom: 1vh;
+}
+
+.option input[type="text"] {
+    flex: 1;
+}
+
+.option button {
+    padding: 0.5vh 1vw;
+    background-color: #ffebee;
+    color: #d32f2f;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+
+.option button:hover {
+    background-color: #ffcdd2;
+}
+
+/* Modal Actions */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1vw;
+    margin-top: 2vh;
+}
+
+.modal-actions button {
+    padding: 1vh 2vw;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.modal-actions button[type="submit"] {
+    background-color: burlywood;
+    color: black;
+}
+
+.modal-actions button[type="submit"]:hover {
+    background-color: rgb(196, 161, 115);
+}
+
+.modal-actions button[type="button"] {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.modal-actions button[type="button"]:hover {
+    background-color: #e0e0e0;
 } 

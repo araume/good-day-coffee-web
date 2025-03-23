@@ -59,46 +59,57 @@
                 <div class="modal-content">
                     <span class="close">&times;</span>
                     <h2>User Information</h2>
-                    <form id="userForm">
-                        <div class="form-group">
-                            <label for="name">Name:</label>
-                            <input type="text" id="name" name="name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number:</label>
-                            <input type="tel" id="phone" name="phone" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email:</label>
-                            <input type="email" id="email" name="email" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="age">Age:</label>
-                            <input type="number" id="age" name="age" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="gender">Gender:</label>
-                            <select id="gender" name="gender" required>
-                                <option value="">Select Gender</option>
-                                <option value="Male">Male</option>
-                                <option value="Female">Female</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="status">Status:</label>
-                            <select id="status" name="status" required>
-                                <option value="">Select Status</option>
-                                <option value="Active">Active</option>
-                                <option value="Inactive">Inactive</option>
-                                <option value="Pending">Pending</option>
-                            </select>
-                        </div>
-                        <div class="form-buttons">
-                            <button type="submit" class="save-btn">Save</button>
-                            <button type="button" class="cancel-btn">Cancel</button>
-                        </div>
-                    </form>
+                    <div class="modal-form-container">
+                        <form id="userForm">
+                            <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number:</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="password">Password:</label>
+                                <input type="password" id="password" name="password">
+                                <small class="password-hint">Leave blank to keep current password when editing</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmPassword">Confirm Password:</label>
+                                <input type="password" id="confirmPassword" name="confirmPassword">
+                            </div>
+                            <div class="form-group">
+                                <label for="age">Age:</label>
+                                <input type="number" id="age" name="age" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender:</label>
+                                <select id="gender" name="gender" required>
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="status">Status:</label>
+                                <select id="status" name="status" required>
+                                    <option value="">Select Status</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                    <option value="Pending">Pending</option>
+                                </select>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="save-btn">Save</button>
+                                <button type="button" class="cancel-btn">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,5 +146,6 @@
             </div>
         </footer>
         <script src="nav.js"></script>
+        <script src="js/user-management.js"></script>
     </body>
 </html>

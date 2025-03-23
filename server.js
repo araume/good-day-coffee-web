@@ -7,6 +7,8 @@ import MongoStore from 'connect-mongo';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import userRoutes from './route/userRoute.js';
+import lessonRoutes from './route/lessonRoute.js';
+import recipeRoutes from './route/recipeRoute.js';
 
 // Load environment variables
 dotenv.config();
@@ -43,7 +45,9 @@ app.use(session({
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
-app.use('/api', userRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/lessons', lessonRoutes);
+app.use('/api/recipes', recipeRoutes);
 
 // Redirect root to login page
 app.get('/', (req, res) => {
