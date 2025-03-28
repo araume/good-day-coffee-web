@@ -9,6 +9,7 @@ import { fileURLToPath } from 'url';
 import userRoutes from './route/userRoute.js';
 import lessonRoutes from './route/lessonRoute.js';
 import recipeRoutes from './route/recipeRoute.js';
+import quizScoreRoutes from './route/quizScoreRoute.js';
 
 // Load environment variables
 dotenv.config();
@@ -48,6 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/users', userRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/recipes', recipeRoutes);
+app.use('/api/quiz-scores', quizScoreRoutes);
 
 // Redirect root to login page
 app.get('/', (req, res) => {

@@ -40,28 +40,42 @@ export const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        // Generate token
-        const token = generateToken(user._id);
-        console.log('Token generated');
+        // Set user ID in session
+        req.session.userId = user._id;
+        console.log('Session set with userId:', user._id);
 
-        // Set cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+        // If it's an AJAX request, send JSON response
+        if (req.xhr || req.headers.accept.includes('application/json')) {
+            return res.json({ 
+                message: 'Login successful',
+                user: {
+                    id: user._id,
+                    email: user.email,
+                    name: user.name
+                }
+            });
+        }
 
-        console.log('Login successful, redirecting to home');
+        // For regular form submission, redirect
         res.redirect('/home.html');
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ message: 'Server Error' });
+        if (req.xhr || req.headers.accept.includes('application/json')) {
+            return res.status(500).json({ message: 'Server error during login' });
+        }
+        res.redirect('/?error=login_failed');
     }
 };
 
 export const logout = (req, res) => {
-    res.clearCookie('token');
-    res.redirect('/');
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Logout error:', err);
+            return res.status(500).json({ message: 'Error during logout' });
+        }
+        res.clearCookie('connect.sid');
+        res.json({ message: 'Logged out successfully' });
+    });
 };
 
 export const register = async (req, res) => {

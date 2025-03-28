@@ -297,3 +297,21 @@ footer a{
     margin: 5vh auto;
     font-size: 1.2em;
 }
+
+.previous-score {
+    background-color: #e8f5e9;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #4CAF50;
+}
+
+.previous-score h4 {
+    color: #2e7d32;
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+#lessondrop option {
+    padding: 0.5rem;
+}

@@ -27,24 +27,23 @@
                 <label for="lessondrop">Select Lesson:</label>
                 <div class="selector-container">
                     <select name="Lesson" id="lessondrop">
-                        <option value="lesson1">Lesson 1</option>
-                        <option value="lesson2">Lesson 2</option>
-                        <option value="lesson3">Lesson 3</option>
+                        <!-- Lessons will be populated dynamically -->
                     </select>
                     <a href="lesson-management.html" class="manage-btn">Manage Lessons</a>
                 </div>
             </div>
             <div class="lesson-container">
-                <aside class="lesson-table">
-                    <h2>Lesson Contents</h2>
-                    <ul class="lesson-list">
-                        <!-- Lesson table of contents will be populated here -->
-                    </ul>
-                </aside>
                 <main class="lesson-content">
                     <h2>Lesson Content</h2>
                     <div class="content-area">
                         <!-- Lesson content will be populated here -->
+                    </div>
+                    <div class="quiz-section">
+                        <h3>Quiz</h3>
+                        <div class="quiz-questions">
+                            <!-- Quiz questions will be populated here -->
+                        </div>
+                        <button id="submit-quiz" class="submit-btn">Submit Quiz</button>
                     </div>
                 </main>
             </div>
@@ -82,5 +81,6 @@
             </div>
         </footer>
         <script src="nav.js"></script>
+        <script src="js/workbook.js"></script>
     </body>
 </html>
