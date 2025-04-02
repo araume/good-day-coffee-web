@@ -9,46 +9,46 @@ import {
     getCurrentUser,
     updateProfile 
 } from '../controller/userController.js';
-import { auth } from '../middleware/auth.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Auth routes
+// Auth routes (no auth required)
 router.post('/login', login);
 router.get('/logout', logout);
 
 // User management routes (protected)
-router.get('/users', auth, getAllUsers);
-router.post('/users', auth, createUser);
-router.put('/users/:id', auth, updateUser);
-router.delete('/users/:id', auth, deleteUser);
+router.get('/', isAuthenticated, getAllUsers);
+router.post('/', isAuthenticated, createUser);
+router.put('/:id', isAuthenticated, updateUser);
+router.delete('/:id', isAuthenticated, deleteUser);
 
-// Profile routes
-router.get('/profile', auth, getCurrentUser);
-router.put('/profile', auth, updateProfile);
+// Profile routes (protected)
+router.get('/profile', isAuthenticated, getCurrentUser);
+router.put('/profile', isAuthenticated, updateProfile);
 
 // Protected page routes
-router.get('/home.html', auth, (req, res) => {
+router.get('/home.html', isAuthenticated, (req, res) => {
     res.sendFile('public/home.html', { root: '.' });
 });
 
-router.get('/profile.html', auth, (req, res) => {
+router.get('/profile.html', isAuthenticated, (req, res) => {
     res.sendFile('public/profile.html', { root: '.' });
 });
 
-router.get('/recipe.html', auth, (req, res) => {
+router.get('/recipe.html', isAuthenticated, (req, res) => {
     res.sendFile('public/recipe.html', { root: '.' });
 });
 
-router.get('/workbook.html', auth, (req, res) => {
+router.get('/workbook.html', isAuthenticated, (req, res) => {
     res.sendFile('public/workbook.html', { root: '.' });
 });
 
-router.get('/management.html', auth, (req, res) => {
+router.get('/management.html', isAuthenticated, (req, res) => {
     res.sendFile('public/management.html', { root: '.' });
 });
 
-router.get('/all-recipe.html', auth, (req, res) => {
+router.get('/all-recipe.html', isAuthenticated, (req, res) => {
     res.sendFile('public/all-recipe.html', { root: '.' });
 });
 

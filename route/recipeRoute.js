@@ -7,7 +7,7 @@ import {
     deleteRecipe,
     addRating 
 } from '../controller/recipeController.js';
-import { auth } from '../middleware/auth.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -16,9 +16,9 @@ router.get('/', getAllRecipes);
 router.get('/:id', getRecipe);
 
 // Protected routes (require authentication)
-router.post('/', auth, createRecipe);
-router.put('/:id', auth, updateRecipe);
-router.delete('/:id', auth, deleteRecipe);
-router.post('/:id/rate', auth, addRating);
+router.post('/', isAuthenticated, createRecipe);
+router.put('/:id', isAuthenticated, updateRecipe);
+router.delete('/:id', isAuthenticated, deleteRecipe);
+router.post('/:id/rate', isAuthenticated, addRating);
 
 export default router; 

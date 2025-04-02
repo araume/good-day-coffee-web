@@ -10,6 +10,7 @@ import userRoutes from './route/userRoute.js';
 import lessonRoutes from './route/lessonRoute.js';
 import recipeRoutes from './route/recipeRoute.js';
 import quizScoreRoutes from './route/quizScoreRoute.js';
+import { isAuthenticated } from './middleware/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -50,6 +51,31 @@ app.use('/api/users', userRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/quiz-scores', quizScoreRoutes);
+
+// Protected page routes
+app.get('/home.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'home.html'));
+});
+
+app.get('/profile.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+});
+
+app.get('/recipe.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'recipe.html'));
+});
+
+app.get('/workbook.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'workbook.html'));
+});
+
+app.get('/management.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'management.html'));
+});
+
+app.get('/all-recipe.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'all-recipe.html'));
+});
 
 // Redirect root to login page
 app.get('/', (req, res) => {

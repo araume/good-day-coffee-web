@@ -13,7 +13,9 @@ let currentUserId = null;
 // Fetch all users
 async function fetchUsers() {
     try {
-        const response = await fetch('/api/users/users');
+        const response = await fetch('/api/users', {
+            credentials: 'include'
+        });
         if (!response.ok) throw new Error('Failed to fetch users');
         users = await response.json();
         displayUsers(users);
@@ -113,10 +115,11 @@ async function handleSubmit(e) {
     try {
         if (currentUserId) {
             // Update user
-            const response = await fetch(`/api/users/users/${currentUserId}`, {
+            const response = await fetch(`/api/users/${currentUserId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
+                body: JSON.stringify(userData),
+                credentials: 'include'
             });
             
             if (!response.ok) {
@@ -125,10 +128,11 @@ async function handleSubmit(e) {
             }
         } else {
             // Create new user
-            const response = await fetch('/api/users/users', {
+            const response = await fetch('/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userData)
+                body: JSON.stringify(userData),
+                credentials: 'include'
             });
             
             if (!response.ok) {
@@ -157,10 +161,11 @@ async function deleteUser(userId) {
     if (!confirm('Are you sure you want to delete this user?')) return;
 
     try {
-        const response = await fetch(`/api/users/users/${userId}`, {
+        const response = await fetch(`/api/users/${userId}`, {
             method: 'DELETE',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ overrideCode: 'GoodDayCoffeeSystemOverRide2025' })
+            body: JSON.stringify({ overrideCode: 'GoodDayCoffeeSystemOverRide2025' }),
+            credentials: 'include'
         });
 
         if (!response.ok) {

@@ -1,8 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
+    const errorMessage = document.getElementById('error-message');
     
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        errorMessage.style.display = 'none'; // Clear any previous errors
         
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
@@ -11,29 +13,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/users/login', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({ email, password }),
                 credentials: 'include' // Important for session cookies
             });
             
-            if (response.redirected) {
-                window.location.href = response.url;
-                return;
-            }
-            
             const data = await response.json();
             
             if (response.ok) {
-                // If we get a successful response, redirect to home
-                window.location.href = '/home.html';
+                // Show success message
+                errorMessage.style.color = 'green';
+                errorMessage.textContent = 'Login successful! Redirecting...';
+                errorMessage.style.display = 'block';
+                
+                // Redirect after a short delay
+                setTimeout(() => {
+                    window.location.href = '/home.html';
+                }, 1000);
             } else {
-                alert(data.message || 'Login failed');
+                // Show error message
+                errorMessage.style.color = 'red';
+                errorMessage.textContent = data.message || 'Login failed';
+                errorMessage.style.display = 'block';
             }
         } catch (error) {
             console.error('Login error:', error);
-            alert('An error occurred during login');
+            errorMessage.textContent = 'An error occurred during login. Please try again.';
+            errorMessage.style.display = 'block';
         }
     });
 });

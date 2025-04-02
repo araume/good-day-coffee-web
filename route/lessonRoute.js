@@ -6,23 +6,23 @@ import {
     updateLesson, 
     deleteLesson 
 } from '../controller/lessonController.js';
-import { auth } from '../middleware/auth.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Get all lessons
-router.get('/', auth, getAllLessons);
+router.get('/', isAuthenticated, getAllLessons);
 
 // Get a single lesson
-router.get('/:id', auth, getLesson);
+router.get('/:id', isAuthenticated, getLesson);
 
 // Create a new lesson
-router.post('/', auth, createLesson);
+router.post('/', isAuthenticated, createLesson);
 
 // Update a lesson
-router.put('/:id', auth, updateLesson);
+router.put('/:id', isAuthenticated, updateLesson);
 
 // Delete a lesson
-router.delete('/:id', auth, deleteLesson);
+router.delete('/:id', isAuthenticated, deleteLesson);
 
 export default router; 

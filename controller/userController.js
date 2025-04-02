@@ -44,26 +44,17 @@ export const login = async (req, res) => {
         req.session.userId = user._id;
         console.log('Session set with userId:', user._id);
 
-        // If it's an AJAX request, send JSON response
-        if (req.xhr || req.headers.accept.includes('application/json')) {
-            return res.json({ 
-                message: 'Login successful',
-                user: {
-                    id: user._id,
-                    email: user.email,
-                    name: user.name
-                }
-            });
-        }
-
-        // For regular form submission, redirect
-        res.redirect('/home.html');
+        res.json({ 
+            message: 'Login successful',
+            user: {
+                id: user._id,
+                email: user.email,
+                name: user.name
+            }
+        });
     } catch (error) {
         console.error('Login error:', error);
-        if (req.xhr || req.headers.accept.includes('application/json')) {
-            return res.status(500).json({ message: 'Server error during login' });
-        }
-        res.redirect('/?error=login_failed');
+        res.status(500).json({ message: 'Server error during login' });
     }
 };
 
@@ -230,7 +221,10 @@ export const deleteUser = async (req, res) => {
 // Get current user profile
 export const getCurrentUser = async (req, res) => {
     try {
-        const user = await User.findById(req.user.userId).select('-password');
+        if (!req.session.userId) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        const user = await User.findById(req.session.userId).select('-password');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -244,7 +238,10 @@ export const getCurrentUser = async (req, res) => {
 // Update user profile
 export const updateProfile = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        if (!req.session.userId) {
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        const userId = req.session.userId;
         const updateData = req.body;
 
         // Remove any fields that shouldn't be updated
