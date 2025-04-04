@@ -181,13 +181,31 @@ body{
     margin: 1rem;
     color: #333;
     font-size: 1.4rem;
+    padding-bottom: 1rem;
 }
 
-.recipe-card .rating {
-    margin: 0 1rem 1rem;
-    color: #f39c12;
-    font-weight: bold;
-    font-size: 1.2rem;
+/* Remove rating styles */
+.recipe-section {
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.recipe-section h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 2.2rem;
+}
+
+.recipe-section ul,
+.recipe-section ol {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.recipe-section li {
+    margin-bottom: 0.5rem;
+    color: #666;
+    font-size: 1.5rem;
 }
 
 /* Modal Styles */
@@ -306,29 +324,6 @@ body{
     object-fit: cover;
     border-radius: 5px;
     margin-bottom: 1rem;
-}
-
-.recipe-section {
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-}
-
-.recipe-section h3 {
-    color: #333;
-    margin-bottom: 0.5rem;
-    font-size: 2.2rem;
-}
-
-.recipe-section ul,
-.recipe-section ol {
-    margin: 0;
-    padding-left: 1.5rem;
-}
-
-.recipe-section li {
-    margin-bottom: 0.5rem;
-    color: #666;
-    font-size: 1.5rem;
 }
 
 .rating-container {
@@ -498,4 +493,41 @@ footer a{
     font-size: 3rem;
     margin-bottom: 1.5rem;
     color: #333;
+}
+
+/* Recipe Actions */
+.recipe-actions {
+    margin-top: 2vh;
+    padding-top: 2vh;
+    border-top: 2px solid burlywood;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1vw;
+}
+
+.delete-btn {
+    padding: 1vh 2vw;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+    .recipe-actions {
+        margin-top: 1.5vh;
+        padding-top: 1.5vh;
+    }
+
+    .delete-btn {
+        padding: 0.8vh 1.5vw;
+        font-size: 0.9em;
+    }
 }

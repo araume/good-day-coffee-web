@@ -97,7 +97,6 @@ function createRecipeCard(recipe) {
     card.innerHTML = `
         <img src="${recipe.image}" alt="${recipe.name}">
         <h3>${recipe.name}</h3>
-        <div class="rating">${recipe.averageRating.toFixed(1)} ⭐</div>
     `;
 
     card.addEventListener('click', () => showRecipeDetails(recipe));
@@ -133,46 +132,35 @@ function showRecipeDetails(recipe) {
             <p>${recipe.season}</p>
         </div>
 
-        <div class="recipe-section">
-            <h3>Rating</h3>
-            <div class="rating-container">
-                <div class="current-rating">Current Rating: ${recipe.averageRating.toFixed(1)} ⭐</div>
-                <div class="rating-stars">
-                    ${[1, 2, 3, 4, 5].map(star => `
-                        <span class="star" data-rating="${star}">★</span>
-                    `).join('')}
-                </div>
-            </div>
+        <div class="recipe-actions">
+            <button class="delete-btn" data-recipe-id="${recipe._id}">Delete Recipe</button>
         </div>
     `;
 
-    // Add event listeners for rating stars
-    const stars = content.querySelectorAll('.star');
-    stars.forEach(star => {
-        star.addEventListener('click', async () => {
-            const rating = parseInt(star.dataset.rating);
+    // Add delete button functionality
+    const deleteBtn = content.querySelector('.delete-btn');
+    deleteBtn.addEventListener('click', async () => {
+        if (confirm('Are you sure you want to delete this recipe? This action cannot be undone.')) {
             try {
-                const response = await fetch(`/api/recipes/${recipe._id}/rate`, {
-                    method: 'POST',
+                const response = await fetch(`/api/recipes/${recipe._id}`, {
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ rating })
+                    }
                 });
 
                 if (!response.ok) {
-                    throw new Error('Failed to rate recipe');
+                    throw new Error('Failed to delete recipe');
                 }
 
-                // Update the displayed rating
-                const updatedRecipe = await response.json();
-                content.querySelector('.current-rating').textContent = 
-                    `Current Rating: ${updatedRecipe.averageRating.toFixed(1)} ⭐`;
+                alert('Recipe deleted successfully!');
+                modal.style.display = 'none';
+                fetchRecipes(); // Refresh the recipe grid
             } catch (error) {
-                console.error('Error rating recipe:', error);
-                alert('Failed to rate recipe. Please try again.');
+                console.error('Error deleting recipe:', error);
+                alert('Failed to delete recipe. Please try again.');
             }
-        });
+        }
     });
 
     // Add close button functionality
