@@ -10,19 +10,13 @@ import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Get all lessons
-router.get('/', isAuthenticated, getAllLessons);
+// Public routes
+router.get('/', getAllLessons);
+router.get('/:id', getLesson);
 
-// Get a single lesson
-router.get('/:id', isAuthenticated, getLesson);
-
-// Create a new lesson
+// Protected routes
 router.post('/', isAuthenticated, createLesson);
-
-// Update a lesson
 router.put('/:id', isAuthenticated, updateLesson);
-
-// Delete a lesson
 router.delete('/:id', isAuthenticated, deleteLesson);
 
 export default router; 

@@ -5,11 +5,15 @@ const addLessonBtn = document.querySelector('.add-lesson-btn');
 // Fetch all lessons
 async function fetchLessons() {
     try {
-        const response = await fetch('/api/lessons');
+        const response = await fetch('/api/lessons', {
+            credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Failed to fetch lessons');
         const lessons = await response.json();
         displayLessons(lessons);
     } catch (error) {
         console.error('Error fetching lessons:', error);
+        alert('Failed to load lessons');
     }
 }
 
@@ -38,7 +42,7 @@ function createLessonCard(lesson) {
         <div class="lesson-card-content">
             <p>${lesson.description}</p>
             <div class="lesson-stats">
-                <span>Quiz Questions: ${lesson.quiz.length}</span>
+                <span>Quiz Questions: ${lesson.quiz ? lesson.quiz.length : 0}</span>
             </div>
         </div>
     `;
@@ -54,30 +58,60 @@ async function createLesson(lessonData) {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(lessonData)
+            body: JSON.stringify(lessonData),
+            credentials: 'include'
         });
         
-        if (response.ok) {
-            fetchLessons();
-            closeModal();
-        } else {
+        if (!response.ok) {
             const error = await response.json();
-            alert(error.message);
+            throw new Error(error.message);
         }
+        
+        fetchLessons();
+        closeModal();
     } catch (error) {
         console.error('Error creating lesson:', error);
-        alert('Error creating lesson');
+        alert(error.message || 'Error creating lesson');
     }
 }
 
 // Edit a lesson
 async function editLesson(lessonId) {
     try {
-        const response = await fetch(`/api/lessons/${lessonId}`);
+        const response = await fetch(`/api/lessons/${lessonId}`, {
+            credentials: 'include'
+        });
+        if (!response.ok) throw new Error('Failed to fetch lesson');
         const lesson = await response.json();
-        showEditModal(lesson);
+        showModal('Edit Lesson', lesson);
     } catch (error) {
         console.error('Error fetching lesson:', error);
+        alert('Failed to load lesson');
+    }
+}
+
+// Update a lesson
+async function updateLesson(lessonId, lessonData) {
+    try {
+        const response = await fetch(`/api/lessons/${lessonId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(lessonData),
+            credentials: 'include'
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message);
+        }
+        
+        fetchLessons();
+        closeModal();
+    } catch (error) {
+        console.error('Error updating lesson:', error);
+        alert(error.message || 'Error updating lesson');
     }
 }
 
@@ -86,18 +120,19 @@ async function deleteLesson(lessonId) {
     if (confirm('Are you sure you want to delete this lesson?')) {
         try {
             const response = await fetch(`/api/lessons/${lessonId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             });
             
-            if (response.ok) {
-                fetchLessons();
-            } else {
+            if (!response.ok) {
                 const error = await response.json();
-                alert(error.message);
+                throw new Error(error.message);
             }
+            
+            fetchLessons();
         } catch (error) {
             console.error('Error deleting lesson:', error);
-            alert('Error deleting lesson');
+            alert(error.message || 'Error deleting lesson');
         }
     }
 }
@@ -108,6 +143,7 @@ function showModal(title, lesson = null) {
     modal.className = 'modal';
     modal.innerHTML = `
         <div class="modal-content">
+            <span class="close">&times;</span>
             <h2>${title}</h2>
             <form id="lessonForm">
                 <div class="form-group">
@@ -121,7 +157,7 @@ function showModal(title, lesson = null) {
                 <div class="form-group">
                     <label>Quiz Questions</label>
                     <div id="quizQuestions">
-                        ${lesson ? lesson.quiz.map((q, i) => createQuizQuestionHTML(q, i)).join('') : ''}
+                        ${lesson && lesson.quiz ? lesson.quiz.map((q, i) => createQuizQuestionHTML(q, i)).join('') : ''}
                     </div>
                     <button type="button" onclick="addQuizQuestion()">Add Question</button>
                 </div>
@@ -151,6 +187,9 @@ function showModal(title, lesson = null) {
             createLesson(lessonData);
         }
     });
+
+    // Handle close button
+    modal.querySelector('.close').addEventListener('click', closeModal);
 }
 
 // Create HTML for a quiz question
@@ -199,12 +238,12 @@ function addOption(button) {
     const question = button.closest('.quiz-question');
     const index = question.dataset.index;
     const optionsContainer = question.querySelector('.options-container');
-    const optionCount = optionsContainer.children.length;
+    const optionIndex = optionsContainer.children.length;
     
     const optionHTML = `
         <div class="option">
-            <input type="radio" name="correct${index}" value="${optionCount}">
-            <input type="text" name="option${index}${optionCount}" required>
+            <input type="radio" name="correct${index}" value="${optionIndex}">
+            <input type="text" name="option${index}${optionIndex}" required>
             <button type="button" onclick="removeOption(this)">Remove</button>
         </div>
     `;
@@ -232,7 +271,7 @@ function removeOption(button) {
 // Remove a question
 function removeQuestion(button) {
     const question = button.closest('.quiz-question');
-    const container = question.parentElement;
+    const container = document.getElementById('quizQuestions');
     
     if (container.children.length > 1) {
         question.remove();
@@ -242,31 +281,34 @@ function removeQuestion(button) {
             q.querySelector('label').textContent = `Question ${i + 1}`;
         });
     } else {
-        alert('A lesson must have at least one question');
+        alert('A lesson must have at least 1 question');
     }
 }
 
-// Get quiz questions from the form
+// Get all quiz questions from the form
 function getQuizQuestions() {
     const questions = [];
-    document.querySelectorAll('.quiz-question').forEach((q, qIndex) => {
-        const options = [];
-        q.querySelectorAll('.option input[type="text"]').forEach(opt => {
-            options.push(opt.value);
+    const questionElements = document.querySelectorAll('.quiz-question');
+    
+    questionElements.forEach((questionEl, qIndex) => {
+        const question = {
+            question: questionEl.querySelector(`input[name="question${qIndex}"]`).value,
+            options: [],
+            correctAnswer: parseInt(questionEl.querySelector(`input[name="correct${qIndex}"]:checked`).value)
+        };
+        
+        // Get all options for this question
+        questionEl.querySelectorAll('.option').forEach((optionEl, oIndex) => {
+            question.options.push(optionEl.querySelector(`input[name="option${qIndex}${oIndex}"]`).value);
         });
         
-        const correctAnswer = parseInt(q.querySelector(`input[name="correct${qIndex}"]:checked`).value);
-        
-        questions.push({
-            question: q.querySelector(`input[name="question${qIndex}"]`).value,
-            options,
-            correctAnswer
-        });
+        questions.push(question);
     });
+    
     return questions;
 }
 
-// Close the modal
+// Close modal
 function closeModal() {
     const modal = document.querySelector('.modal');
     if (modal) {
@@ -274,11 +316,8 @@ function closeModal() {
     }
 }
 
-// Initialize
+// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
     fetchLessons();
-    
-    addLessonBtn.addEventListener('click', () => {
-        showModal('Create New Lesson');
-    });
+    addLessonBtn.addEventListener('click', () => showModal('Add New Lesson'));
 }); 

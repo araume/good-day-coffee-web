@@ -1,16 +1,15 @@
 // Function to fetch lessons from the backend
 async function fetchLessons() {
     try {
-        const response = await fetch('/api/lessons', {
-            credentials: 'include'
-        });
+        const response = await fetch('/api/lessons');
         if (!response.ok) {
-            throw new Error('Failed to fetch lessons');
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to fetch lessons');
         }
         return await response.json();
     } catch (error) {
         console.error('Error fetching lessons:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -21,12 +20,17 @@ async function fetchQuizScores() {
             credentials: 'include'
         });
         if (!response.ok) {
-            throw new Error('Failed to fetch quiz scores');
+            if (response.status === 401) {
+                throw new Error('Please log in to view quiz scores');
+            } else {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to fetch quiz scores');
+            }
         }
         return await response.json();
     } catch (error) {
         console.error('Error fetching quiz scores:', error);
-        return [];
+        throw error;
     }
 }
 
@@ -61,35 +65,64 @@ async function saveQuizScore(lessonId, score, totalQuestions, percentage) {
 
 // Function to populate the lesson dropdown
 async function populateLessonDropdown() {
-    const dropdown = document.getElementById('lessondrop');
-    dropdown.innerHTML = ''; // Clear existing options
-    
-    const lessons = await fetchLessons();
-    const scores = await fetchQuizScores();
-    
-    if (lessons.length === 0) {
-        const option = document.createElement('option');
-        option.value = '';
-        option.textContent = 'No lessons available';
-        dropdown.appendChild(option);
-        return;
+    try {
+        const dropdown = document.getElementById('lessondrop');
+        if (!dropdown) {
+            console.error('Lesson dropdown element not found');
+            return;
+        }
+        
+        dropdown.innerHTML = ''; // Clear existing options
+        
+        const lessons = await fetchLessons();
+        if (!Array.isArray(lessons)) {
+            console.error('Invalid lessons data received:', lessons);
+            dropdown.innerHTML = '<option value="">Error loading lessons</option>';
+            return;
+        }
+        
+        const scores = await fetchQuizScores();
+        if (!Array.isArray(scores)) {
+            console.error('Invalid scores data received:', scores);
+            scores = [];
+        }
+        
+        if (lessons.length === 0) {
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No lessons available';
+            dropdown.appendChild(option);
+            return;
+        }
+        
+        lessons.forEach(lesson => {
+            if (!lesson || !lesson._id) {
+                console.error('Invalid lesson object:', lesson);
+                return;
+            }
+            
+            const option = document.createElement('option');
+            option.value = lesson._id;
+            
+            // Find matching score with null checks
+            const score = scores.find(s => s && s.lessonId && s.lessonId._id === lesson._id);
+            option.textContent = `${lesson.title}${score ? ` (Score: ${score.percentage}%)` : ''}`;
+            dropdown.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error populating lesson dropdown:', error);
+        const dropdown = document.getElementById('lessondrop');
+        if (dropdown) {
+            dropdown.innerHTML = '<option value="">Error loading lessons</option>';
+        }
+        throw error;
     }
-    
-    lessons.forEach(lesson => {
-        const option = document.createElement('option');
-        option.value = lesson._id;
-        const score = scores.find(s => s.lessonId._id === lesson._id);
-        option.textContent = `${lesson.title}${score ? ` (Score: ${score.percentage}%)` : ''}`;
-        dropdown.appendChild(option);
-    });
 }
 
 // Function to fetch a single lesson
 async function fetchLesson(lessonId) {
     try {
-        const response = await fetch(`/api/lessons/${lessonId}`, {
-            credentials: 'include'
-        });
+        const response = await fetch(`/api/lessons/${lessonId}`);
         if (!response.ok) {
             throw new Error('Failed to fetch lesson');
         }
@@ -200,50 +233,50 @@ function handleQuizSubmit() {
             });
 
             if (unansweredQuestions.length > 0) {
-                alert(`Please answer all questions before submitting. Unanswered questions: ${unansweredQuestions.join(', ')}`);
+                alert(`Please answer all questions. Unanswered questions: ${unansweredQuestions.join(', ')}`);
                 return;
             }
+
+            const percentage = Math.round((score / totalQuestions) * 100);
             
-            const percentage = (score / totalQuestions) * 100;
-            
-            // Save the quiz score
-            const savedScore = await saveQuizScore(currentLesson, score, totalQuestions, percentage);
-            
-            if (savedScore) {
-                alert(`Your score: ${score}/${totalQuestions} (${percentage.toFixed(1)}%)\nScore saved successfully!`);
-                // Refresh the dropdown to show updated scores
-                await populateLessonDropdown();
-                // Refresh the quiz display to show the new score
-                displayQuiz(lesson.quiz, currentLesson);
+            try {
+                await saveQuizScore(currentLesson, score, totalQuestions, percentage);
+                alert(`Quiz submitted! Your score: ${percentage}%`);
+                // Refresh the lesson to show updated score
+                displayLessonContent(currentLesson);
+            } catch (error) {
+                alert(error.message || 'Error saving your score');
             }
         } catch (error) {
-            if (error.message.includes('not authenticated')) {
-                alert('Please log in to save your quiz score');
-                window.location.href = '/index.html';
-            } else if (error.message.includes('already exists')) {
-                alert('You have already completed this quiz');
-            } else {
-                alert(`Error saving your score: ${error.message}`);
-            }
+            console.error('Error submitting quiz:', error);
+            alert('Error submitting quiz');
         }
     });
 }
 
-// Initialize the page
-document.addEventListener('DOMContentLoaded', async () => {
-    await populateLessonDropdown();
-    
-    // Add event listener for lesson selection
-    document.getElementById('lessondrop').addEventListener('change', (e) => {
-        displayLessonContent(e.target.value);
-    });
-    
-    // Add event listener for quiz submission
-    handleQuizSubmit();
-    
-    // Display first lesson by default if available
-    const firstLesson = document.getElementById('lessondrop').value;
-    if (firstLesson) {
-        displayLessonContent(firstLesson);
+// Initialize the workbook page
+async function initializeWorkbook() {
+    try {
+        // Populate lesson dropdown
+        await populateLessonDropdown();
+        
+        // Add event listener for lesson selection
+        const lessonDropdown = document.getElementById('lessondrop');
+        lessonDropdown.addEventListener('change', (e) => {
+            displayLessonContent(e.target.value);
+        });
+        
+        // Initialize quiz submission handler
+        handleQuizSubmit();
+    } catch (error) {
+        console.error('Error initializing workbook:', error);
+        alert(error.message || 'Error loading workbook. Please try logging in again.');
+        // Redirect to login page if authentication error
+        if (error.message.includes('log in')) {
+            window.location.href = '/index.html';
+        }
     }
-}); 
+}
+
+// Start the workbook when the page loads
+document.addEventListener('DOMContentLoaded', initializeWorkbook); 

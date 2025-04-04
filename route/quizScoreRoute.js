@@ -1,11 +1,11 @@
 import express from 'express';
 import { saveQuizScore, getUserQuizScores, getQuizScore } from '../controller/quizScoreController.js';
-import { auth } from '../middleware/auth.js';
+import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // Apply authentication middleware to all routes
-router.use(auth);
+router.use(isAuthenticated);
 
 // Save a new quiz score
 router.post('/', saveQuizScore);
