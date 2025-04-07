@@ -11,7 +11,7 @@ body{
 /* Nav */
 #title{
     display: inline-block;
-    font-size: 4em;
+    font-size: 5em;
     font-weight: bold;
     margin-left: 2vw;
     padding: 3vh 2vw 0 2vw;
@@ -113,60 +113,211 @@ body{
     }
 }
 
-/* Content */
-.container{
+/* Content - REDESIGNED SECTION */
+.container {
     display: flex;
-    height: 70vh;
+    min-height: 85vh;
+    position: relative;
+    overflow: hidden;
 }
-.cont{
+
+.cont {
+    position: relative;
+    transition: all 0.5s ease;
+}
+
+.cont.left {
     width: 50%;
-}
-.cont.left{
-    background-image: url('img/cup-coffee-min.jpg');
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('img/cup-coffee-min.jpg');
     background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    clip-path: polygon(0 0, 100% 0, 85% 100%, 0% 100%);
+    z-index: 1;
 }
-.cont.right{
-    margin-left: auto;
+
+.cont.left::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: rgba(222, 184, 135, 0.3);
+    border-radius: 50%;
+    transition: width 0.6s ease, height 0.6s ease;
+    z-index: -1;
 }
-@media (max-width: 768px) {
-    .container{
-        flex-direction: column;
-    }
-    .cont{
-        width: 100%;
-        height: 50vh;
-    }
+
+.cont.left:hover::before {
+    width: 300px;
+    height: 300px;
 }
-.pages{
-    padding-top: 20vh;
-    display: block;
+
+.cont.right {
+    width: 55%;
+    margin-left: -5%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    z-index: 0;
+}
+
+.cont h2 {
     text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: #5D4037;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 15px;
 }
-.cont h2{
-    text-align: center;
-    font-size: 4em;
-    margin-top: 10vh;
+
+.cont h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #5D4037, burlywood);
 }
-.cont a{
+
+.pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.cont a {
     text-decoration: none;
     color: white;
-    background-color: black;
-    width: 50%;
-    height: 5vh;
-    padding: 1.5vh 0 1vh 0;
-    margin: 10px auto;
+    background-color: #5D4037;
+    width: 70%;
+    max-width: 300px;
+    padding: 1rem 0;
+    margin: 0.8rem 0;
     display: block;
-    font-size: 3em;
-    box-shadow: 0 4px 10px 0 rgba(0,0,0,.3);
-    border-radius: 10px;
-    transition: 0.2s;
+    font-size: 1.2rem;
+    box-shadow: 0 4px 10px 0 rgba(0,0,0,.2);
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
 }
-.cont a:hover{
-    background-color: white;
-    color: black;
+
+.cont a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+    z-index: -1;
 }
-/* Footer */
+
+.cont a:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    background-color: burlywood;
+    color: #ffffff;
+}
+
+.cont a:hover::before {
+    left: 100%;
+}
+
+.quote {
+    font-style: italic;
+    text-align: center;
+    color: #777;
+    margin: 2rem 0;
+    font-size: 1.1rem;
+    position: relative;
+    padding: 0 20px;
+}
+
+.quote::before, .quote::after {
+    content: '"';
+    font-size: 2rem;
+    color: burlywood;
+    position: absolute;
+}
+
+.quote::before {
+    top: -15px;
+    left: 0;
+}
+
+.quote::after {
+    bottom: -15px;
+    right: 0;
+}
+
+@media (max-width: 992px) {
+    .cont.left {
+        clip-path: none;
+    }
+    
+    .cont.right {
+        margin-left: 0;
+        width: 50%;
+        border-radius: 20px;
+    }
+    
+    .cont h2 {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+    
+    .cont {
+        width: 100%;
+        min-height: 40vh;
+    }
+    
+    .cont.left {
+        clip-path: none;
+        border-radius: 0;
+    }
+    
+    .cont.right {
+        width: 90%;
+        margin: -50px auto 30px;
+        border-radius: 20px;
+        z-index: 2;
+    }
+    
+    .cont h2 {
+        font-size: 1.8rem;
+    }
+    
+    .quote {
+        font-size: 1rem;
+    }
+}
+
+/* Footer - REVERTED TO ORIGINAL */
 footer{
     background-color: burlywood;
     height: 60vh;

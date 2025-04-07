@@ -125,4 +125,40 @@ export const addRating = async (req, res) => {
         console.error('Error adding rating:', error);
         res.status(500).json({ message: 'Server Error' });
     }
+};
+
+// Get seasonal recipes
+export const getSeasonalRecipes = async (req, res) => {
+    try {
+        // Get current month (0-11)
+        const currentMonth = new Date().getMonth();
+        
+        // Determine current season based on month
+        let currentSeason;
+        if (currentMonth >= 2 && currentMonth <= 4) {
+            currentSeason = 'spring';
+        } else if (currentMonth >= 5 && currentMonth <= 7) {
+            currentSeason = 'summer';
+        } else if (currentMonth >= 8 && currentMonth <= 10) {
+            currentSeason = 'fall';
+        } else {
+            currentSeason = 'winter';
+        }
+        
+        // Find recipes for the current season
+        const recipes = await Recipe.find({ season: currentSeason });
+        
+        // Randomly select 6 recipes (or all if less than 6)
+        const selectedRecipes = recipes
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 6);
+        
+        res.status(200).json({
+            season: currentSeason,
+            recipes: selectedRecipes
+        });
+    } catch (error) {
+        console.error('Error fetching seasonal recipes:', error);
+        res.status(500).json({ message: 'Server Error' });
+    }
 }; 

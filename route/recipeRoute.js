@@ -5,7 +5,8 @@ import {
     createRecipe, 
     updateRecipe, 
     deleteRecipe,
-    addRating 
+    addRating,
+    getSeasonalRecipes 
 } from '../controller/recipeController.js';
 import { isAuthenticated } from '../middleware/auth.js';
 
@@ -13,6 +14,7 @@ const router = express.Router();
 
 // Public routes
 router.get('/', getAllRecipes);
+router.get('/seasonal', getSeasonalRecipes);
 router.get('/:id', getRecipe);
 
 // Protected routes (require authentication)

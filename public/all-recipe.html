@@ -25,10 +25,28 @@
         <div class="container">
             <div class="header">
                 <h1>All Recipes</h1>
-                <button id="addRecipeBtn" class="add-recipe-btn">Add New Recipe</button>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <div class="search">
+                            <img src="img/search.png" alt="search-icon">
+                            <input type="text" id="searchInput" placeholder="Search recipes by name, ingredients, or steps">
+                            <button id="clearSearch" class="search-clear">&times;</button>
+                            <select name="filter" id="seasonFilter">
+                                <option value="">All Seasons</option>
+                                <option value="spring">Spring</option>
+                                <option value="summer">Summer</option>
+                                <option value="fall">Fall</option>
+                                <option value="winter">Winter</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="searchStatus" class="search-status"></div>
+                    <button id="addRecipeBtn" class="add-recipe-btn">Add New Recipe</button>
+                </div>
             </div>
             <div id="recipeGrid" class="recipe-grid">
                 <!-- Recipe cards will be dynamically added here -->
+                <div class="loading">Loading recipes...</div>
             </div>
         </div>
         <!-- Add Recipe Modal -->
