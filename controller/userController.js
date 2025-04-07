@@ -11,7 +11,7 @@ export const fetch = async (req, res) => {
     }
 }
 
-export const login = async (req, res) => {
+export const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
         console.log('Login attempt:', { email, password });
@@ -43,13 +43,22 @@ export const login = async (req, res) => {
         // Set user ID in session
         req.session.userId = user._id;
         console.log('Session set with userId:', user._id);
+        
+        // Check admin status
+        const isAdmin = user.email === 'admin@gooddaycoffee.com' || user.isAdmin === true;
+        console.log('Is admin:', isAdmin);
+
+        // Generate JWT token
+        const token = generateToken(user._id);
 
         res.json({ 
             message: 'Login successful',
+            token,
             user: {
                 id: user._id,
                 email: user.email,
-                name: user.name
+                name: user.name,
+                isAdmin: isAdmin
             }
         });
     } catch (error) {
@@ -69,7 +78,7 @@ export const logout = (req, res) => {
     });
 };
 
-export const register = async (req, res) => {
+export const registerUser = async (req, res) => {
     try {
         const { name, email, password } = req.body;
 
@@ -219,16 +228,36 @@ export const deleteUser = async (req, res) => {
 };
 
 // Get current user profile
-export const getCurrentUser = async (req, res) => {
+export const getUserProfile = async (req, res) => {
     try {
-        if (!req.session.userId) {
+        // Check for user in req (set by auth middleware)
+        if (req.user) {
+            const userData = req.user.toObject();
+            delete userData.password;
+            
+            // Explicitly check admin status
+            userData.isAdmin = userData.email === 'admin@gooddaycoffee.com' || userData.isAdmin === true;
+            
+            return res.status(200).json(userData);
+        }
+        
+        // Fallback to session authentication
+        if (!req.session || !req.session.userId) {
             return res.status(401).json({ message: 'Not authenticated' });
         }
+        
         const user = await User.findById(req.session.userId).select('-password');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
-        res.status(200).json(user);
+        
+        // Convert to plain object
+        const userData = user.toObject();
+        
+        // Explicitly check admin status
+        userData.isAdmin = userData.email === 'admin@gooddaycoffee.com' || userData.isAdmin === true;
+        
+        res.status(200).json(userData);
     } catch (error) {
         console.error('Error fetching user profile:', error);
         res.status(500).json({ message: 'Server Error' });
@@ -236,7 +265,7 @@ export const getCurrentUser = async (req, res) => {
 };
 
 // Update user profile
-export const updateProfile = async (req, res) => {
+export const updateUserProfile = async (req, res) => {
     try {
         if (!req.session.userId) {
             return res.status(401).json({ message: 'Not authenticated' });

@@ -22,6 +22,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json();
             
             if (response.ok) {
+                // Store token in localStorage if present
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                }
+                
+                // Store user info including admin status
+                if (data.user) {
+                    localStorage.setItem('userEmail', data.user.email);
+                    localStorage.setItem('isAdmin', data.user.isAdmin || false);
+                    console.log('User login info saved:', {
+                        email: data.user.email,
+                        isAdmin: data.user.isAdmin
+                    });
+                }
+                
                 // Show success message
                 errorMessage.style.color = 'green';
                 errorMessage.textContent = 'Login successful! Redirecting...';

@@ -1,55 +1,28 @@
 import express from 'express';
+import { auth, isAdmin } from '../middleware/auth.js';
 import { 
-    login, 
-    logout, 
-    getAllUsers, 
-    createUser, 
-    updateUser, 
+    registerUser, 
+    loginUser, 
+    getUserProfile,
+    updateUserProfile,
+    getAllUsers,
     deleteUser,
-    getCurrentUser,
-    updateProfile 
+    updateUser
 } from '../controller/userController.js';
-import { isAuthenticated } from '../middleware/auth.js';
 
 const router = express.Router();
 
-// Auth routes (no auth required)
-router.post('/login', login);
-router.get('/logout', logout);
+// Public routes
+router.post('/register', registerUser);
+router.post('/login', loginUser);
 
-// User management routes (protected)
-router.get('/', isAuthenticated, getAllUsers);
-router.post('/', isAuthenticated, createUser);
-router.put('/:id', isAuthenticated, updateUser);
-router.delete('/:id', isAuthenticated, deleteUser);
+// Protected routes (require authentication)
+router.get('/profile', auth, getUserProfile);
+router.put('/profile', auth, updateUserProfile);
 
-// Profile routes (protected)
-router.get('/profile', isAuthenticated, getCurrentUser);
-router.put('/profile', isAuthenticated, updateProfile);
-
-// Protected page routes
-router.get('/home.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/home.html', { root: '.' });
-});
-
-router.get('/profile.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/profile.html', { root: '.' });
-});
-
-router.get('/recipe.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/recipe.html', { root: '.' });
-});
-
-router.get('/workbook.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/workbook.html', { root: '.' });
-});
-
-router.get('/management.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/management.html', { root: '.' });
-});
-
-router.get('/all-recipe.html', isAuthenticated, (req, res) => {
-    res.sendFile('public/all-recipe.html', { root: '.' });
-});
+// Admin only routes
+router.get('/users', auth, isAdmin, getAllUsers);
+router.delete('/users/:id', auth, isAdmin, deleteUser);
+router.put('/users/:id', auth, isAdmin, updateUser);
 
 export default router;

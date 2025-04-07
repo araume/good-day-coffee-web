@@ -13,15 +13,31 @@ let currentUserId = null;
 // Fetch all users
 async function fetchUsers() {
     try {
-        const response = await fetch('/api/users', {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            alert('Authentication error. Please log in again.');
+            return;
+        }
+
+        const response = await fetch('/api/users/users', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
             credentials: 'include'
         });
-        if (!response.ok) throw new Error('Failed to fetch users');
+        
+        if (!response.ok) {
+            console.error('Failed to fetch users:', response.status, response.statusText);
+            throw new Error('Failed to fetch users');
+        }
+        
         users = await response.json();
+        console.log('Users fetched successfully:', users);
         displayUsers(users);
     } catch (error) {
         console.error('Error fetching users:', error);
-        alert('Failed to load users');
+        alert('Failed to load users: ' + error.message);
     }
 }
 
@@ -83,7 +99,7 @@ async function handleSubmit(e) {
     const missingFields = requiredFields.filter(field => !userData[field]);
     
     if (missingFields.length > 0) {
-        alert(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        alert(`Please fill in all required fields: ${missingFields.join(',')}`);
         return;
     }
 
@@ -113,11 +129,21 @@ async function handleSubmit(e) {
     userData.overrideCode = 'GoodDayCoffeeSystemOverRide2025';
 
     try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            alert('Authentication error. Please log in again.');
+            return;
+        }
+
         if (currentUserId) {
             // Update user
-            const response = await fetch(`/api/users/${currentUserId}`, {
+            const response = await fetch(`/api/users/users/${currentUserId}`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(userData),
                 credentials: 'include'
             });
@@ -128,9 +154,12 @@ async function handleSubmit(e) {
             }
         } else {
             // Create new user
-            const response = await fetch('/api/users', {
+            const response = await fetch('/api/users/users', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
                 body: JSON.stringify(userData),
                 credentials: 'include'
             });
@@ -161,9 +190,19 @@ async function deleteUser(userId) {
     if (!confirm('Are you sure you want to delete this user?')) return;
 
     try {
-        const response = await fetch(`/api/users/${userId}`, {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            alert('Authentication error. Please log in again.');
+            return;
+        }
+
+        const response = await fetch(`/api/users/users/${userId}`, {
             method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
             body: JSON.stringify({ overrideCode: 'GoodDayCoffeeSystemOverRide2025' }),
             credentials: 'include'
         });

@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: true
     },
+    isAdmin: {
+        type: Boolean,
+        default: function() {
+            return this.email === 'admin@gooddaycoffee.com';
+        }
+    },
     createdAt: {
         type: Date,
         default: Date.now

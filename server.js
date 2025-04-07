@@ -10,7 +10,7 @@ import userRoutes from './route/userRoute.js';
 import lessonRoutes from './route/lessonRoute.js';
 import recipeRoutes from './route/recipeRoute.js';
 import quizScoreRoutes from './route/quizScoreRoute.js';
-import { isAuthenticated } from './middleware/auth.js';
+import { isAuthenticated, auth, isAdmin } from './middleware/auth.js';
 
 // Load environment variables
 dotenv.config();
@@ -52,7 +52,7 @@ app.use('/api/lessons', lessonRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/quiz-scores', quizScoreRoutes);
 
-// Protected page routes
+// Protected page routes - available to all authenticated users
 app.get('/home.html', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'home.html'));
 });
@@ -69,12 +69,21 @@ app.get('/workbook.html', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'workbook.html'));
 });
 
-app.get('/management.html', isAuthenticated, (req, res) => {
+app.get('/all-recipe.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'all-recipe.html'));
+});
+
+// Admin-only page routes
+app.get('/management.html', auth, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'management.html'));
 });
 
-app.get('/all-recipe.html', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'all-recipe.html'));
+app.get('/recipe-management.html', auth, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'recipe-management.html'));
+});
+
+app.get('/lesson-management.html', auth, isAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'lesson-management.html'));
 });
 
 // Redirect root to login page
