@@ -3,36 +3,83 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Good day coffee - Login</title>
+        <title>Good Day Coffee - Login</title>
         <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
     <body>
         <div class="container">
             <div class="left">
-
+                <div class="overlay">
+                    <div class="brand">
+                        <h1>Good Day Coffee</h1>
+                        <p>Start your day with the perfect brew</p>
+                    </div>
+                </div>
             </div>
             <div class="right">
-                <h1>Login</h1>
-                <form id="loginForm">
-                    <input type="email" id="email" name="email" placeholder="Email" required>
-                    <input type="password" id="password" name="password" placeholder="Password" required>
-                    <div class="show-password">
-                        <input type="checkbox" id="show-password" onclick="togglePasswordVisibility()">
-                        <label for="show-password">Show Password</label>
+                <div class="login-container">
+                    <div class="login-header">
+                        <h2>Welcome Back</h2>
+                        <p>Please sign in to continue</p>
                     </div>
-                    <button type="submit">Login</button>
-                    <p id="error-message" style="color: red; display: none;"></p>
-                </form>
+                    
+                    <form id="loginForm">
+                        <div class="input-group">
+                            <div class="input-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <input type="email" id="email" name="email" placeholder="Email Address" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <div class="input-icon">
+                                <i class="fas fa-lock"></i>
+                            </div>
+                            <input type="password" id="password" name="password" placeholder="Password" required>
+                            <div class="password-toggle" onclick="togglePasswordVisibility()">
+                                <i id="password-icon" class="fas fa-eye"></i>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="login-btn">
+                            <span class="btn-text">Login</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                        
+                        <p id="error-message" class="error-message"></p>
+                    </form>
+                </div>
             </div>
         </div>
         <script>
             function togglePasswordVisibility() {
                 var passwordInput = document.getElementById('password');
+                var passwordIcon = document.getElementById('password-icon');
+                var currentValue = passwordInput.value;
+                var currentSelectionStart = passwordInput.selectionStart;
+                var currentSelectionEnd = passwordInput.selectionEnd;
+                
                 if (passwordInput.type === "password") {
                     passwordInput.type = "text";
+                    passwordIcon.classList.remove('fa-eye');
+                    passwordIcon.classList.add('fa-eye-slash');
                 } else {
                     passwordInput.type = "password";
+                    passwordIcon.classList.remove('fa-eye-slash');
+                    passwordIcon.classList.add('fa-eye');
                 }
+                
+                // Preserve value and cursor position after toggling
+                passwordInput.value = currentValue;
+                passwordInput.setSelectionRange(currentSelectionStart, currentSelectionEnd);
+            }
+            
+            // Show error message function
+            function showError(message) {
+                const errorElement = document.getElementById('error-message');
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
             }
         </script>
         <script src="login.js"></script>
