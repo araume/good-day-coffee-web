@@ -43,7 +43,55 @@ app.use(session({
     }
 }));
 
-// Serve static files
+// Public assets that don't require authentication
+app.use('/img', express.static(path.join(__dirname, 'public/img')));
+app.use('/index.html', express.static(path.join(__dirname, 'public/index.html')));
+app.use('/index.css', express.static(path.join(__dirname, 'public/index.css')));
+app.use('/login.js', express.static(path.join(__dirname, 'public/login.js')));
+
+// Authentication middleware for static files
+// This will check if the user is authenticated for all other static files
+app.use((req, res, next) => {
+    // List of paths that don't require authentication
+    const publicPaths = [
+        '/',
+        '/index.html',
+        '/login.js',
+        '/index.css',
+        '/img',
+        '/api/users/login',
+        '/api/users/register'
+    ];
+    
+    // Check if the requested path is public
+    const isPublicPath = publicPaths.some(path => 
+        req.path === path || req.path.startsWith('/img/'));
+    
+    if (isPublicPath) {
+        return next();
+    }
+    
+    // Check for JWT token in the Authorization header
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    // Check for session authentication
+    const isSessionAuth = req.session && req.session.userId;
+    
+    if (!token && !isSessionAuth) {
+        // If it's an API request, return 401 status
+        if (req.path.startsWith('/api/')) {
+            return res.status(401).json({ message: 'Authentication required' });
+        }
+        
+        // If it's a page request, redirect to login page
+        return res.redirect('/index.html');
+    }
+    
+    next();
+});
+
+// Serve static files (now protected by the auth middleware above)
 app.use(express.static(path.join(__dirname, 'public')));
 
 // API routes
@@ -86,8 +134,8 @@ app.get('/lesson-management.html', auth, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'lesson-management.html'));
 });
 
-// Redirect root to login page
-app.get('/', (req, res) => {
+// Catch-all route to redirect any non-matching routes to login
+app.get('*', (req, res) => {
     res.redirect('/index.html');
 });
 
