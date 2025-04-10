@@ -1,0 +1,9 @@
+bcrypt
+bcryptjs
+body-parser
+connect-mongo
+cookie-parser
+dotenv
+express
+express-session
+jsonwebtoken
