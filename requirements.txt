@@ -1,5 +1,4 @@
 bcrypt
-body-parser
 connect-mongo
 cookie-parser
 dotenv
@@ -9,4 +8,4 @@ jsonwebtoken
 mongodb
 mongoose
 nodemon
-
+body-parser
