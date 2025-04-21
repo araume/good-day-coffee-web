@@ -6,6 +6,7 @@ import {
     getUserProfile,
     updateUserProfile,
     getAllUsers,
+    createUser,
     deleteUser,
     updateUser
 } from '../controller/userController.js';
@@ -22,6 +23,7 @@ router.put('/profile', auth, updateUserProfile);
 
 // Admin only routes
 router.get('/users', auth, isAdmin, getAllUsers);
+router.post('/users', auth, isAdmin, createUser);
 router.delete('/users/:id', auth, isAdmin, deleteUser);
 router.put('/users/:id', auth, isAdmin, updateUser);
 

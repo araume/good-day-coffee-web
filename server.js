@@ -49,6 +49,18 @@ app.use('/index.html', express.static(path.join(__dirname, 'public/index.html'))
 app.use('/index.css', express.static(path.join(__dirname, 'public/index.css')));
 app.use('/login.js', express.static(path.join(__dirname, 'public/login.js')));
 
+// API error handler - Must be before other routes
+app.use((err, req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+        console.error('API Error:', err);
+        return res.status(err.status || 500).json({
+            message: err.message || 'Internal Server Error',
+            error: process.env.NODE_ENV === 'production' ? {} : err
+        });
+    }
+    next(err);
+});
+
 // Authentication middleware for static files
 // This will check if the user is authenticated for all other static files
 app.use((req, res, next) => {
@@ -79,7 +91,7 @@ app.use((req, res, next) => {
     const isSessionAuth = req.session && req.session.userId;
     
     if (!token && !isSessionAuth) {
-        // If it's an API request, return 401 status
+        // If it's an API request, return 401 status with JSON
         if (req.path.startsWith('/api/')) {
             return res.status(401).json({ message: 'Authentication required' });
         }
@@ -99,6 +111,11 @@ app.use('/api/users', userRoutes);
 app.use('/api/lessons', lessonRoutes);
 app.use('/api/recipes', recipeRoutes);
 app.use('/api/quiz-scores', quizScoreRoutes);
+
+// API 404 handler for unknown API routes
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ message: 'API endpoint not found' });
+});
 
 // Protected page routes - available to all authenticated users
 app.get('/home.html', isAuthenticated, (req, res) => {
