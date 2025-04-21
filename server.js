@@ -138,6 +138,14 @@ app.get('/all-recipe.html', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'all-recipe.html'));
 });
 
+app.get('/help.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'help.html'));
+});
+
+app.get('/about.html', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'about.html'));
+});
+
 // Admin-only page routes
 app.get('/management.html', auth, isAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'management.html'));
