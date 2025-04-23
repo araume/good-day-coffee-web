@@ -17,7 +17,7 @@
             <div class="nav-links">
                 <a href="management.html">Management</a>
                 <a href="profile.html">Profile</a>
-                <a href="Help.html">Help</a>
+                <a href="help.html">Help</a>
                 <a href="about.html">About us</a>
                 <a href="index.html">Logout</a>
             </div>
@@ -27,24 +27,14 @@
                 <h1>Lesson Management</h1>
                 <button class="add-lesson-btn">Add New Lesson</button>
             </div>
-            <div class="lessons-grid">
-                <div class="lesson-card">
-                    <div class="lesson-card-header">
-                        <h3>Lesson 1</h3>
-                        <div class="card-actions">
-                            <button class="edit-btn">Edit</button>
-                            <button class="delete-btn">Delete</button>
-                        </div>
-                    </div>
-                    <div class="lesson-card-content">
-                        <p>Introduction to Coffee Basics</p>
-                        <div class="lesson-stats">
-                            <span>Duration: 45 mins</span>
-                            <span>Topics: 5</span>
-                        </div>
-                    </div>
+            <div class="management-content">
+                <div class="search-bar">
+                    <input type="text" id="lesson-search" placeholder="Search lessons...">
+                    <button class="search-btn">Search</button>
                 </div>
-                <!-- More lesson cards will be added here -->
+                <div class="lessons-grid">
+                    <!-- Lesson cards will be loaded here dynamically -->
+                </div>
             </div>
         </div>
         <footer>

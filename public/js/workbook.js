@@ -136,11 +136,16 @@ async function fetchLesson(lessonId) {
 // Function to display lesson content
 async function displayLessonContent(lessonId) {
     const contentArea = document.querySelector('.content-area');
-    const quizSection = document.querySelector('.quiz-questions');
+    const quizBtn = document.getElementById('take-quiz-btn');
+    
+    // Reset scroll tracking and quiz button state
+    resetScrollTracking();
+    quizBtn.disabled = true;
     
     if (!lessonId) {
         contentArea.innerHTML = '<p>Please select a lesson</p>';
-        quizSection.innerHTML = '';
+        quizBtn.style.display = 'none';
+        document.getElementById('scroll-indicator').style.display = 'none';
         return;
     }
     
@@ -153,39 +158,97 @@ async function displayLessonContent(lessonId) {
                 ${lesson.description}
             </div>
         `;
-        displayQuiz(lesson.quiz, lessonId);
+        
+        // Initialize scroll tracking for the new content
+        initScrollTracking();
+        
+        // Show quiz button and scroll indicator
+        quizBtn.style.display = 'block';
+        document.getElementById('scroll-indicator').style.display = 'flex';
+        
+        // Check if there's a quiz
+        if (!lesson.quiz || lesson.quiz.length === 0) {
+            quizBtn.disabled = true;
+            quizBtn.textContent = 'No Quiz Available';
+            document.getElementById('scroll-indicator').style.display = 'none';
+        } else {
+            quizBtn.disabled = true;
+            quizBtn.textContent = 'Take Quiz';
+            
+            // Pre-fetch and store quiz questions for later use
+            window.currentQuiz = lesson.quiz;
+            window.currentLessonId = lessonId;
+        }
     } else {
         contentArea.innerHTML = '<p>Error loading lesson content</p>';
-        quizSection.innerHTML = '';
+        quizBtn.style.display = 'none';
+        document.getElementById('scroll-indicator').style.display = 'none';
     }
 }
 
-// Function to display quiz questions
-async function displayQuiz(quiz, lessonId) {
-    const quizSection = document.querySelector('.quiz-questions');
-    quizSection.innerHTML = '';
+// Function to initialize scroll tracking
+function initScrollTracking() {
+    const contentArea = document.querySelector('.content-area');
+    const quizBtn = document.getElementById('take-quiz-btn');
+    const progressBar = document.querySelector('.progress');
     
-    if (!quiz || quiz.length === 0) {
-        quizSection.innerHTML = '<p>No quiz available for this lesson</p>';
+    if (!contentArea || !quizBtn || !progressBar) return;
+    
+    contentArea.addEventListener('scroll', function() {
+        // Calculate scroll percentage
+        const scrollable = contentArea.scrollHeight - contentArea.clientHeight;
+        const scrolled = contentArea.scrollTop;
+        const scrollPercentage = (scrolled / scrollable) * 100;
+        
+        // Update progress bar
+        progressBar.style.width = `${Math.min(scrollPercentage, 100)}%`;
+        
+        // Enable quiz button when scrolled to the bottom (or near bottom)
+        if (scrollPercentage >= 90) {
+            quizBtn.disabled = false;
+            document.getElementById('scroll-indicator').querySelector('span').textContent = 'Quiz is now available!';
+        }
+    });
+}
+
+// Function to reset scroll tracking
+function resetScrollTracking() {
+    const progressBar = document.querySelector('.progress');
+    if (progressBar) progressBar.style.width = '0%';
+    
+    // Reset the indicator text
+    const indicatorText = document.getElementById('scroll-indicator').querySelector('span');
+    if (indicatorText) indicatorText.textContent = 'Please read the entire lesson to unlock the quiz';
+}
+
+// Function to display quiz in modal
+function displayQuizModal() {
+    const quizModal = document.getElementById('quiz-modal');
+    const quizQuestionsContainer = quizModal.querySelector('.quiz-questions');
+    const previousScoreContainer = quizModal.querySelector('.previous-score-container');
+    
+    // Clear previous content
+    quizQuestionsContainer.innerHTML = '';
+    previousScoreContainer.innerHTML = '';
+    previousScoreContainer.style.display = 'none';
+    
+    if (!window.currentQuiz || window.currentQuiz.length === 0) {
+        quizQuestionsContainer.innerHTML = '<p>No quiz available for this lesson</p>';
         return;
     }
 
     // Fetch previous score if exists
-    try {
-        const response = await fetch(`/api/quiz-scores/${lessonId}`);
-        if (response.ok) {
-            const score = await response.json();
-            quizSection.innerHTML += `
-                <div class="previous-score">
-                    <h4>Previous Score: ${score.percentage}%</h4>
-                </div>
-            `;
-        }
-    } catch (error) {
-        console.error('Error fetching previous score:', error);
-    }
+    fetchPreviousScore(window.currentLessonId)
+        .then(score => {
+            if (score) {
+                previousScoreContainer.innerHTML = `<h4>Previous Score: ${score.percentage}%</h4>`;
+                previousScoreContainer.style.display = 'block';
+            }
+        })
+        .catch(error => console.error('Error fetching previous score:', error));
     
-    quiz.forEach((question, index) => {
+    // Display quiz questions
+    window.currentQuiz.forEach((question, index) => {
         const questionDiv = document.createElement('div');
         questionDiv.className = 'quiz-question';
         questionDiv.innerHTML = `
@@ -197,86 +260,131 @@ async function displayQuiz(quiz, lessonId) {
                 </label>
             `).join('')}
         `;
-        quizSection.appendChild(questionDiv);
+        quizQuestionsContainer.appendChild(questionDiv);
     });
+    
+    // Display the modal
+    quizModal.style.display = 'block';
 }
 
-// Function to handle quiz submission
-function handleQuizSubmit() {
-    const submitBtn = document.getElementById('submit-quiz');
-    submitBtn.addEventListener('click', async () => {
-        try {
-            const currentLesson = document.getElementById('lessondrop').value;
-            if (!currentLesson) {
-                alert('Please select a lesson first');
-                return;
-            }
-            
-            const lesson = await fetchLesson(currentLesson);
-            if (!lesson || !lesson.quiz) {
-                alert('No quiz available for this lesson');
-                return;
-            }
-            
-            let score = 0;
-            const totalQuestions = lesson.quiz.length;
-            
-            // Check if all questions are answered
-            let unansweredQuestions = [];
-            lesson.quiz.forEach((question, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (!selected) {
-                    unansweredQuestions.push(index + 1);
-                } else if (parseInt(selected.value) === question.correctAnswer) {
-                    score++;
-                }
-            });
-
-            if (unansweredQuestions.length > 0) {
-                alert(`Please answer all questions. Unanswered questions: ${unansweredQuestions.join(', ')}`);
-                return;
-            }
-
-            const percentage = Math.round((score / totalQuestions) * 100);
-            
-            try {
-                await saveQuizScore(currentLesson, score, totalQuestions, percentage);
-                alert(`Quiz submitted! Your score: ${percentage}%`);
-                // Refresh the lesson to show updated score
-                displayLessonContent(currentLesson);
-            } catch (error) {
-                alert(error.message || 'Error saving your score');
-            }
-        } catch (error) {
-            console.error('Error submitting quiz:', error);
-            alert('Error submitting quiz');
-        }
-    });
-}
-
-// Initialize the workbook page
-async function initializeWorkbook() {
+// Function to fetch previous score
+async function fetchPreviousScore(lessonId) {
     try {
-        // Populate lesson dropdown
-        await populateLessonDropdown();
-        
-        // Add event listener for lesson selection
-        const lessonDropdown = document.getElementById('lessondrop');
-        lessonDropdown.addEventListener('change', (e) => {
-            displayLessonContent(e.target.value);
-        });
-        
-        // Initialize quiz submission handler
-        handleQuizSubmit();
-    } catch (error) {
-        console.error('Error initializing workbook:', error);
-        alert(error.message || 'Error loading workbook. Please try logging in again.');
-        // Redirect to login page if authentication error
-        if (error.message.includes('log in')) {
-            window.location.href = '/index.html';
+        const response = await fetch(`/api/quiz-scores/${lessonId}`);
+        if (response.ok) {
+            return await response.json();
         }
+        return null;
+    } catch (error) {
+        console.error('Error fetching previous score:', error);
+        return null;
     }
 }
 
-// Start the workbook when the page loads
+// Function to handle quiz submission
+async function handleQuizSubmit() {
+    try {
+        if (!window.currentLessonId || !window.currentQuiz) {
+            alert('No quiz available');
+            return;
+        }
+        
+        let score = 0;
+        const totalQuestions = window.currentQuiz.length;
+        
+        // Check if all questions are answered
+        let unansweredQuestions = [];
+        window.currentQuiz.forEach((question, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            if (!selected) {
+                unansweredQuestions.push(index + 1);
+            } else if (parseInt(selected.value) === question.correctAnswer) {
+                score++;
+            }
+        });
+
+        if (unansweredQuestions.length > 0) {
+            alert(`Please answer all questions. Unanswered questions: ${unansweredQuestions.join(', ')}`);
+            return;
+        }
+
+        const percentage = Math.round((score / totalQuestions) * 100);
+        
+        try {
+            await saveQuizScore(window.currentLessonId, score, totalQuestions, percentage);
+            alert(`Quiz submitted! Your score: ${percentage}%`);
+            
+            // Close modal
+            document.getElementById('quiz-modal').style.display = 'none';
+            
+            // Refresh the dropdown to show updated score
+            await populateLessonDropdown();
+            
+            // Refresh the lesson display
+            const lessonSelector = document.getElementById('lessondrop');
+            if (lessonSelector) {
+                displayLessonContent(lessonSelector.value);
+            }
+        } catch (error) {
+            alert(error.message || 'Error saving your score');
+        }
+    } catch (error) {
+        console.error('Error handling quiz submission:', error);
+        alert('An error occurred while submitting the quiz');
+    }
+}
+
+// Modal interactions
+function setupModalInteractions() {
+    const modal = document.getElementById('quiz-modal');
+    const closeBtn = document.querySelector('.close-modal');
+    
+    // Close modal when clicking X
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+
+// Function to initialize workbook
+async function initializeWorkbook() {
+    try {
+        // Set up lesson selector
+        await populateLessonDropdown();
+        
+        // Set up lesson selection change
+        const lessonSelector = document.getElementById('lessondrop');
+        lessonSelector.addEventListener('change', function() {
+            displayLessonContent(this.value);
+        });
+        
+        // Display initial lesson if available
+        if (lessonSelector.value) {
+            displayLessonContent(lessonSelector.value);
+        }
+        
+        // Set up quiz button
+        const quizBtn = document.getElementById('take-quiz-btn');
+        quizBtn.addEventListener('click', displayQuizModal);
+        
+        // Set up quiz submission
+        const submitBtn = document.getElementById('submit-quiz');
+        submitBtn.addEventListener('click', handleQuizSubmit);
+        
+        // Set up modal interactions
+        setupModalInteractions();
+        
+    } catch (error) {
+        console.error('Error initializing workbook:', error);
+        alert('Failed to load workbook content');
+    }
+}
+
+// Initialize the workbook when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', initializeWorkbook); 

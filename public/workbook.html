@@ -38,16 +38,32 @@
                     <div class="content-area">
                         <!-- Lesson content will be populated here -->
                     </div>
-                    <div class="quiz-section">
-                        <h3>Quiz</h3>
-                        <div class="quiz-questions">
-                            <!-- Quiz questions will be populated here -->
+                    <div class="quiz-button-container">
+                        <button id="take-quiz-btn" class="quiz-btn" disabled>Take Quiz</button>
+                        <div id="scroll-indicator" class="scroll-indicator">
+                            <span>Please read the entire lesson to unlock the quiz</span>
+                            <div class="progress-bar">
+                                <div class="progress"></div>
+                            </div>
                         </div>
-                        <button id="submit-quiz" class="submit-btn">Submit Quiz</button>
                     </div>
                 </main>
             </div>
         </div>
+        
+        <!-- Quiz Modal -->
+        <div id="quiz-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Quiz</h2>
+                <div class="previous-score-container"></div>
+                <div class="quiz-questions">
+                    <!-- Quiz questions will be populated here -->
+                </div>
+                <button id="submit-quiz" class="submit-btn">Submit Quiz</button>
+            </div>
+        </div>
+        
         <footer>
             <span class="footer-links">
                 <span class="details">
@@ -65,7 +81,7 @@
                 </div>
                 <div class="about">
                     <h3>About</h3>
-                    <a href="mailto:someone@example.com">Email</a>
+                    <a href="mailto:gooddaycoffees2025@gmail.com">Email</a>
                     <a href="tel:+1234567890">Contact No.</a>
                 </div>
             </span>

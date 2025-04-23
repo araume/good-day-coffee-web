@@ -1,6 +1,11 @@
 // DOM Elements
 const lessonsGrid = document.querySelector('.lessons-grid');
 const addLessonBtn = document.querySelector('.add-lesson-btn');
+const searchInput = document.getElementById('lesson-search');
+const searchBtn = document.querySelector('.search-btn');
+
+// Store all lessons for filtering
+let allLessons = [];
 
 // Fetch all lessons
 async function fetchLessons() {
@@ -10,6 +15,7 @@ async function fetchLessons() {
         });
         if (!response.ok) throw new Error('Failed to fetch lessons');
         const lessons = await response.json();
+        allLessons = lessons; // Store all lessons
         displayLessons(lessons);
     } catch (error) {
         console.error('Error fetching lessons:', error);
@@ -20,6 +26,12 @@ async function fetchLessons() {
 // Display lessons in the grid
 function displayLessons(lessons) {
     lessonsGrid.innerHTML = '';
+    
+    if (lessons.length === 0) {
+        lessonsGrid.innerHTML = '<div class="no-results">No lessons found</div>';
+        return;
+    }
+    
     lessons.forEach(lesson => {
         const lessonCard = createLessonCard(lesson);
         lessonsGrid.appendChild(lessonCard);
@@ -48,6 +60,19 @@ function createLessonCard(lesson) {
     `;
     
     return card;
+}
+
+// Filter lessons based on search input
+function filterLessons(searchTerm) {
+    if (!searchTerm) {
+        return allLessons;
+    }
+    
+    searchTerm = searchTerm.toLowerCase();
+    return allLessons.filter(lesson => 
+        lesson.title.toLowerCase().includes(searchTerm) || 
+        lesson.description.toLowerCase().includes(searchTerm)
+    );
 }
 
 // Create a new lesson
@@ -145,27 +170,31 @@ function showModal(title, lesson = null) {
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>${title}</h2>
-            <form id="lessonForm">
-                <div class="form-group">
-                    <label for="title">Lesson Title</label>
-                    <input type="text" id="title" name="title" required value="${lesson ? lesson.title : ''}">
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description" required>${lesson ? lesson.description : ''}</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Quiz Questions</label>
-                    <div id="quizQuestions">
-                        ${lesson && lesson.quiz ? lesson.quiz.map((q, i) => createQuizQuestionHTML(q, i)).join('') : ''}
+            <div class="modal-form-container">
+                <form id="lessonForm">
+                    <div class="form-group">
+                        <label for="title">Lesson Title</label>
+                        <input type="text" id="title" name="title" placeholder="Enter lesson title" required value="${lesson ? lesson.title : ''}">
                     </div>
-                    <button type="button" onclick="addQuizQuestion()">Add Question</button>
-                </div>
-                <div class="modal-actions">
-                    <button type="submit">${lesson ? 'Update' : 'Create'}</button>
-                    <button type="button" onclick="closeModal()">Cancel</button>
-                </div>
-            </form>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" placeholder="Enter lesson description" required>${lesson ? lesson.description : ''}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Quiz Questions</label>
+                        <div id="quizQuestions" class="quiz-questions-container">
+                            ${lesson && lesson.quiz ? lesson.quiz.map((q, i) => createQuizQuestionHTML(q, i)).join('') : ''}
+                        </div>
+                        <button type="button" class="add-question-btn" onclick="addQuizQuestion()">
+                            <i class="plus-icon">+</i> Add Question
+                        </button>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="cancel-btn" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="save-btn">${lesson ? 'Update Lesson' : 'Create Lesson'}</button>
+                    </div>
+                </form>
+            </div>
         </div>
     `;
     
@@ -190,134 +219,235 @@ function showModal(title, lesson = null) {
 
     // Handle close button
     modal.querySelector('.close').addEventListener('click', closeModal);
+    
+    // Close modal when clicking outside of content
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+    
+    // Show the modal with animation
+    document.body.classList.add('modal-open');
+    setTimeout(() => {
+        modal.style.display = 'block';
+    }, 10);
 }
 
 // Create HTML for a quiz question
 function createQuizQuestionHTML(question = null, index = 0) {
     return `
         <div class="quiz-question" data-index="${index}">
-            <div class="form-group">
+            <div class="quiz-question-header">
                 <label>Question ${index + 1}</label>
-                <input type="text" name="question${index}" value="${question ? question.question : ''}" required>
+                <button type="button" class="remove-question-btn" onclick="removeQuestion(this)" title="Remove Question">
+                    <i class="remove-icon">×</i>
+                </button>
             </div>
-            <div class="options-container">
-                ${question ? question.options.map((opt, i) => `
-                    <div class="option">
-                        <input type="radio" name="correct${index}" value="${i}" ${i === question.correctAnswer ? 'checked' : ''}>
-                        <input type="text" name="option${index}${i}" value="${opt}" required>
-                        <button type="button" onclick="removeOption(this)">Remove</button>
-                    </div>
-                `).join('') : `
-                    <div class="option">
-                        <input type="radio" name="correct${index}" value="0">
-                        <input type="text" name="option${index}0" required>
-                        <button type="button" onclick="removeOption(this)">Remove</button>
-                    </div>
-                    <div class="option">
-                        <input type="radio" name="correct${index}" value="1">
-                        <input type="text" name="option${index}1" required>
-                        <button type="button" onclick="removeOption(this)">Remove</button>
-                    </div>
-                `}
+            <div class="form-group">
+                <input type="text" name="question_${index}" placeholder="Enter your question" required value="${question ? question.question : ''}">
             </div>
-            <button type="button" onclick="addOption(this)">Add Option</button>
-            <button type="button" onclick="removeQuestion(this)">Remove Question</button>
+            <div class="form-group">
+                <label>Options (Select the correct answer)</label>
+                <div class="options-container" data-question="${index}">
+                    ${question && question.options ? question.options.map((option, i) => `
+                        <div class="option">
+                            <input type="radio" id="correct_${index}_${i}" name="correct_${index}" value="${i}" ${question.correctAnswer === i ? 'checked' : ''}>
+                            <input type="text" name="option_${index}_${i}" placeholder="Option ${i + 1}" required value="${option}">
+                            <button type="button" class="remove-option-btn" onclick="removeOption(this)" title="Remove Option">
+                                <i class="remove-icon">×</i>
+                            </button>
+                        </div>
+                    `).join('') : ''}
+                </div>
+                <button type="button" class="add-option-btn" onclick="addOption(this)" data-question="${index}">
+                    <i class="plus-icon">+</i> Add Option
+                </button>
+            </div>
         </div>
     `;
 }
 
 // Add a new quiz question
 function addQuizQuestion() {
-    const container = document.getElementById('quizQuestions');
-    const index = container.children.length;
-    container.insertAdjacentHTML('beforeend', createQuizQuestionHTML(null, index));
+    const quizQuestions = document.getElementById('quizQuestions');
+    const index = quizQuestions.children.length;
+    const questionHTML = createQuizQuestionHTML(null, index);
+    
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = questionHTML;
+    const questionElement = tempDiv.firstElementChild;
+    quizQuestions.appendChild(questionElement);
+    
+    // Add a default option
+    const addOptionBtn = questionElement.querySelector('button[data-question="' + index + '"]');
+    addOption(addOptionBtn);
+    
+    // Scroll to the new question
+    questionElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// Add a new option to a question
+// Add an option to a question
 function addOption(button) {
-    const question = button.closest('.quiz-question');
-    const index = question.dataset.index;
-    const optionsContainer = question.querySelector('.options-container');
+    const questionIndex = button.getAttribute('data-question');
+    const optionsContainer = document.querySelector(`.options-container[data-question="${questionIndex}"]`);
     const optionIndex = optionsContainer.children.length;
     
-    const optionHTML = `
-        <div class="option">
-            <input type="radio" name="correct${index}" value="${optionIndex}">
-            <input type="text" name="option${index}${optionIndex}" required>
-            <button type="button" onclick="removeOption(this)">Remove</button>
-        </div>
+    const option = document.createElement('div');
+    option.className = 'option';
+    option.innerHTML = `
+        <input type="radio" id="correct_${questionIndex}_${optionIndex}" name="correct_${questionIndex}" value="${optionIndex}">
+        <input type="text" name="option_${questionIndex}_${optionIndex}" placeholder="Option ${optionIndex + 1}" required>
+        <button type="button" class="remove-option-btn" onclick="removeOption(this)" title="Remove Option">
+            <i class="remove-icon">×</i>
+        </button>
     `;
     
-    optionsContainer.insertAdjacentHTML('beforeend', optionHTML);
+    optionsContainer.appendChild(option);
+    
+    // Focus the new input field
+    option.querySelector('input[type="text"]').focus();
 }
 
-// Remove an option from a question
+// Remove an option
 function removeOption(button) {
     const option = button.closest('.option');
-    const question = option.closest('.quiz-question');
-    const optionsContainer = question.querySelector('.options-container');
+    const optionsContainer = option.parentNode;
     
-    if (optionsContainer.children.length > 2) {
-        option.remove();
-        // Update radio button values
-        optionsContainer.querySelectorAll('.option').forEach((opt, i) => {
-            opt.querySelector('input[type="radio"]').value = i;
-        });
-    } else {
-        alert('A question must have at least 2 options');
+    // Don't remove if it's the last option
+    if (optionsContainer.children.length <= 1) {
+        alert('A question must have at least one option');
+        return;
     }
+    
+    // Remove the option with animation
+    option.classList.add('removing');
+    setTimeout(() => {
+        // Remove the option
+        option.remove();
+        
+        // Update option indices
+        Array.from(optionsContainer.children).forEach((opt, i) => {
+            const questionIndex = optionsContainer.getAttribute('data-question');
+            const radio = opt.querySelector('input[type="radio"]');
+            const input = opt.querySelector('input[type="text"]');
+            
+            radio.id = `correct_${questionIndex}_${i}`;
+            radio.value = i;
+            radio.name = `correct_${questionIndex}`;
+            input.name = `option_${questionIndex}_${i}`;
+            input.placeholder = `Option ${i + 1}`;
+        });
+    }, 300);
 }
 
 // Remove a question
 function removeQuestion(button) {
     const question = button.closest('.quiz-question');
-    const container = document.getElementById('quizQuestions');
+    const quizQuestions = document.getElementById('quizQuestions');
     
-    if (container.children.length > 1) {
+    // Add removal animation
+    question.classList.add('removing');
+    
+    setTimeout(() => {
+        // Remove the question
         question.remove();
-        // Update question numbers
-        container.querySelectorAll('.quiz-question').forEach((q, i) => {
-            q.dataset.index = i;
-            q.querySelector('label').textContent = `Question ${i + 1}`;
+        
+        // Update question indices
+        Array.from(quizQuestions.children).forEach((q, i) => {
+            q.setAttribute('data-index', i);
+            q.querySelector('.quiz-question-header label').textContent = `Question ${i + 1}`;
+            
+            const questionInput = q.querySelector('input[name^="question_"]');
+            questionInput.name = `question_${i}`;
+            
+            const optionsContainer = q.querySelector('.options-container');
+            optionsContainer.setAttribute('data-question', i);
+            
+            const addOptionBtn = q.querySelector('.add-option-btn');
+            addOptionBtn.setAttribute('data-question', i);
+            
+            // Update option names
+            Array.from(optionsContainer.children).forEach((opt, j) => {
+                const radio = opt.querySelector('input[type="radio"]');
+                const input = opt.querySelector('input[type="text"]');
+                
+                radio.id = `correct_${i}_${j}`;
+                radio.name = `correct_${i}`;
+                radio.value = j;
+                input.name = `option_${i}_${j}`;
+                input.placeholder = `Option ${j + 1}`;
+            });
         });
-    } else {
-        alert('A lesson must have at least 1 question');
-    }
+    }, 300);
 }
 
-// Get all quiz questions from the form
+// Get quiz questions data from the form
 function getQuizQuestions() {
+    const quizQuestions = document.getElementById('quizQuestions');
     const questions = [];
-    const questionElements = document.querySelectorAll('.quiz-question');
     
-    questionElements.forEach((questionEl, qIndex) => {
-        const question = {
-            question: questionEl.querySelector(`input[name="question${qIndex}"]`).value,
-            options: [],
-            correctAnswer: parseInt(questionEl.querySelector(`input[name="correct${qIndex}"]:checked`).value)
-        };
+    Array.from(quizQuestions.children).forEach((q, i) => {
+        const questionText = q.querySelector(`input[name="question_${i}"]`).value;
+        const optionsContainer = q.querySelector(`.options-container[data-question="${i}"]`);
+        const options = [];
+        let correctAnswer = 0;
         
-        // Get all options for this question
-        questionEl.querySelectorAll('.option').forEach((optionEl, oIndex) => {
-            question.options.push(optionEl.querySelector(`input[name="option${qIndex}${oIndex}"]`).value);
+        // Get the selected correct answer
+        const radioGroup = q.querySelectorAll(`input[name="correct_${i}"]`);
+        radioGroup.forEach((radio, j) => {
+            if (radio.checked) {
+                correctAnswer = j;
+            }
+            options.push(q.querySelector(`input[name="option_${i}_${j}"]`).value);
         });
         
-        questions.push(question);
+        questions.push({
+            question: questionText,
+            options: options,
+            correctAnswer: correctAnswer
+        });
     });
     
     return questions;
 }
 
-// Close modal
+// Close the modal
 function closeModal() {
     const modal = document.querySelector('.modal');
     if (modal) {
-        modal.remove();
+        // Add closing animation
+        modal.classList.add('closing');
+        
+        setTimeout(() => {
+            document.body.classList.remove('modal-open');
+            modal.remove();
+        }, 300);
     }
 }
 
-// Event Listeners
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     fetchLessons();
-    addLessonBtn.addEventListener('click', () => showModal('Add New Lesson'));
+    
+    // Add new lesson button click event
+    addLessonBtn.addEventListener('click', () => {
+        showModal('Add New Lesson');
+    });
+    
+    // Search functionality
+    searchBtn.addEventListener('click', () => {
+        const searchTerm = searchInput.value.trim();
+        const filteredLessons = filterLessons(searchTerm);
+        displayLessons(filteredLessons);
+    });
+    
+    // Real-time search on input change
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            const searchTerm = searchInput.value.trim();
+            const filteredLessons = filterLessons(searchTerm);
+            displayLessons(filteredLessons);
+        }
+    });
 }); 
