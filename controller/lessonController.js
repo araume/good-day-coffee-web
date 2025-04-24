@@ -31,11 +31,36 @@ export const createLesson = async (req, res) => {
         // Validate quiz questions
         if (quiz) {
             quiz.forEach((question, index) => {
-                if (!question.question || !question.options || question.options.length < 2) {
-                    throw new Error(`Invalid quiz question at index ${index}`);
+                if (!question.question || !question.type) {
+                    throw new Error(`Missing required fields for question at index ${index}`);
                 }
-                if (question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
-                    throw new Error(`Invalid correct answer for question at index ${index}`);
+                
+                // Validate based on question type
+                if (question.type === 'multiple-choice') {
+                    if (!question.options || question.options.length < 2) {
+                        throw new Error(`Multiple choice question at index ${index} must have at least 2 options`);
+                    }
+                    if (typeof question.correctAnswer !== 'number' || 
+                        question.correctAnswer < 0 || 
+                        question.correctAnswer >= question.options.length) {
+                        throw new Error(`Invalid correct answer for multiple choice question at index ${index}`);
+                    }
+                } else if (question.type === 'multiple-answer') {
+                    if (!question.options || question.options.length < 2) {
+                        throw new Error(`Multiple answer question at index ${index} must have at least 2 options`);
+                }
+                    if (!Array.isArray(question.correctAnswer) || 
+                        !question.correctAnswer.length || 
+                        !question.correctAnswer.every(ans => 
+                            typeof ans === 'number' && ans >= 0 && ans < question.options.length)) {
+                        throw new Error(`Invalid correct answers for multiple answer question at index ${index}`);
+                    }
+                } else if (question.type === 'identification') {
+                    if (typeof question.correctAnswer !== 'string' || !question.correctAnswer.trim()) {
+                        throw new Error(`Invalid correct answer for identification question at index ${index}`);
+                    }
+                } else {
+                    throw new Error(`Invalid question type at index ${index}`);
                 }
             });
         }
@@ -66,11 +91,36 @@ export const updateLesson = async (req, res) => {
         // Validate quiz questions if provided
         if (quiz) {
             quiz.forEach((question, index) => {
-                if (!question.question || !question.options || question.options.length < 2) {
-                    throw new Error(`Invalid quiz question at index ${index}`);
+                if (!question.question || !question.type) {
+                    throw new Error(`Missing required fields for question at index ${index}`);
                 }
-                if (question.correctAnswer < 0 || question.correctAnswer >= question.options.length) {
-                    throw new Error(`Invalid correct answer for question at index ${index}`);
+                
+                // Validate based on question type
+                if (question.type === 'multiple-choice') {
+                    if (!question.options || question.options.length < 2) {
+                        throw new Error(`Multiple choice question at index ${index} must have at least 2 options`);
+                    }
+                    if (typeof question.correctAnswer !== 'number' || 
+                        question.correctAnswer < 0 || 
+                        question.correctAnswer >= question.options.length) {
+                        throw new Error(`Invalid correct answer for multiple choice question at index ${index}`);
+                    }
+                } else if (question.type === 'multiple-answer') {
+                    if (!question.options || question.options.length < 2) {
+                        throw new Error(`Multiple answer question at index ${index} must have at least 2 options`);
+                }
+                    if (!Array.isArray(question.correctAnswer) || 
+                        !question.correctAnswer.length || 
+                        !question.correctAnswer.every(ans => 
+                            typeof ans === 'number' && ans >= 0 && ans < question.options.length)) {
+                        throw new Error(`Invalid correct answers for multiple answer question at index ${index}`);
+                    }
+                } else if (question.type === 'identification') {
+                    if (typeof question.correctAnswer !== 'string' || !question.correctAnswer.trim()) {
+                        throw new Error(`Invalid correct answer for identification question at index ${index}`);
+                    }
+                } else {
+                    throw new Error(`Invalid question type at index ${index}`);
                 }
             });
         }

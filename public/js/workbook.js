@@ -247,24 +247,62 @@ function displayQuizModal() {
         })
         .catch(error => console.error('Error fetching previous score:', error));
     
-    // Display quiz questions
+    // Display quiz questions based on their type
     window.currentQuiz.forEach((question, index) => {
         const questionDiv = document.createElement('div');
         questionDiv.className = 'quiz-question';
-        questionDiv.innerHTML = `
-            <p>${index + 1}. ${question.question}</p>
-            ${question.options.map((option, optIndex) => `
-                <label>
+        
+        // Add question header with question number and text
+        let questionHTML = `<p>${index + 1}. ${question.question}</p>`;
+        
+        // Add question type-specific inputs
+        const questionType = question.type || 'multiple-choice'; // Default to multiple-choice if no type
+        
+        if (questionType === 'identification') {
+            questionHTML += `
+                <div class="identification-answer-container">
+                    <input type="text" name="q${index}" class="identification-answer" placeholder="Type your answer here">
+                </div>
+            `;
+        } else if (questionType === 'multiple-answer') {
+            questionHTML += question.options.map((option, optIndex) => `
+                <label class="checkbox-label">
+                    <input type="checkbox" name="q${index}_opt${optIndex}" value="${optIndex}">
+                    ${option}
+                </label>
+            `).join('');
+        } else { // multiple-choice
+            questionHTML += question.options.map((option, optIndex) => `
+                <label class="radio-label">
                     <input type="radio" name="q${index}" value="${optIndex}">
                     ${option}
                 </label>
-            `).join('')}
-        `;
+            `).join('');
+        }
+        
+        // Add badge for question type
+        questionHTML += `<div class="question-type-badge ${questionType}-badge">${formatQuestionType(questionType)}</div>`;
+        
+        questionDiv.innerHTML = questionHTML;
         quizQuestionsContainer.appendChild(questionDiv);
     });
     
     // Display the modal
     quizModal.style.display = 'block';
+}
+
+// Format question type for display
+function formatQuestionType(type) {
+    switch(type) {
+        case 'multiple-choice':
+            return 'Multiple Choice';
+        case 'identification':
+            return 'Identification';
+        case 'multiple-answer':
+            return 'Multiple Answer';
+        default:
+            return type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ');
+    }
 }
 
 // Function to fetch previous score
@@ -294,12 +332,59 @@ async function handleQuizSubmit() {
         
         // Check if all questions are answered
         let unansweredQuestions = [];
+        
         window.currentQuiz.forEach((question, index) => {
-            const selected = document.querySelector(`input[name="q${index}"]:checked`);
-            if (!selected) {
-                unansweredQuestions.push(index + 1);
-            } else if (parseInt(selected.value) === question.correctAnswer) {
-                score++;
+            const questionType = question.type || 'multiple-choice';
+            
+            if (questionType === 'identification') {
+                // For identification questions, check text input
+                const input = document.querySelector(`input[name="q${index}"]`);
+                if (!input || !input.value.trim()) {
+                    unansweredQuestions.push(index + 1);
+                } else {
+                    // Case-insensitive comparison with the correct answer
+                    const userAnswer = input.value.trim().toLowerCase();
+                    const correctAnswer = String(question.correctAnswer).toLowerCase();
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                    }
+                }
+            } else if (questionType === 'multiple-answer') {
+                // For multiple-answer questions, check checkboxes
+                const checkboxes = document.querySelectorAll(`input[name^="q${index}_opt"]`);
+                const selectedOptions = [];
+                let hasSelection = false;
+                
+                checkboxes.forEach((checkbox, optIndex) => {
+                    if (checkbox.checked) {
+                        hasSelection = true;
+                        selectedOptions.push(optIndex);
+                    }
+                });
+                
+                if (!hasSelection) {
+                    unansweredQuestions.push(index + 1);
+                } else {
+                    // Check if selected options match correct answers
+                    const correctAnswers = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
+                    
+                    // Arrays must be the same length and contain the same elements (order doesn't matter)
+                    const isCorrect = selectedOptions.length === correctAnswers.length && 
+                        selectedOptions.every(opt => correctAnswers.includes(opt)) &&
+                        correctAnswers.every(opt => selectedOptions.includes(opt));
+                    
+                    if (isCorrect) {
+                        score++;
+                    }
+                }
+            } else { // multiple-choice
+                // For multiple-choice questions, check radio buttons
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (!selected) {
+                    unansweredQuestions.push(index + 1);
+                } else if (parseInt(selected.value) === question.correctAnswer) {
+                    score++;
+                }
             }
         });
 
