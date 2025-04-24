@@ -3,7 +3,7 @@ import QuizScore from '../model/QuizScore.js';
 // Save a new quiz score
 export const saveQuizScore = async (req, res) => {
     try {
-        const { lessonId, score, totalQuestions, percentage } = req.body;
+        const { lessonId, score, totalQuestions, percentage, answers } = req.body;
         const userId = req.session.userId; // Get user ID from session
 
         if (!userId) {
@@ -15,7 +15,8 @@ export const saveQuizScore = async (req, res) => {
             lessonId,
             score,
             totalQuestions,
-            percentage
+            percentage,
+            answers: Array.isArray(answers) ? answers : []
         });
 
         const savedScore = await quizScore.save();

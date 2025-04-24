@@ -1,5 +1,11 @@
 import mongoose from 'mongoose';
 
+const answerSchema = new mongoose.Schema({
+    userAnswer: mongoose.Schema.Types.Mixed, // string, array, or number
+    correctAnswer: mongoose.Schema.Types.Mixed, // string, array, or number
+    isCorrect: Boolean
+}, { _id: false });
+
 const quizScoreSchema = new mongoose.Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -30,7 +36,8 @@ const quizScoreSchema = new mongoose.Schema({
     completedAt: {
         type: Date,
         default: Date.now
-    }
+    },
+    answers: [answerSchema]
 });
 
 // Create a compound index to ensure one score per user per lesson

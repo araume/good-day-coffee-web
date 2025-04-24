@@ -35,7 +35,7 @@ async function fetchQuizScores() {
 }
 
 // Function to save a quiz score
-async function saveQuizScore(lessonId, score, totalQuestions, percentage) {
+async function saveQuizScore(lessonId, score, totalQuestions, percentage, answers) {
     try {
         const response = await fetch('/api/quiz-scores', {
             method: 'POST',
@@ -47,7 +47,8 @@ async function saveQuizScore(lessonId, score, totalQuestions, percentage) {
                 lessonId,
                 score,
                 totalQuestions,
-                percentage
+                percentage,
+                answers
             })
         });
 
@@ -348,97 +349,64 @@ async function handleQuizSubmit() {
         
         window.currentQuiz.forEach((question, index) => {
             const questionType = question.type || 'multiple-choice';
-            
             if (questionType === 'identification') {
-                // For identification questions, check text input
                 const input = document.querySelector(`textarea[name="q${index}"]`);
                 if (!input || !input.value.trim()) {
                     unansweredQuestions.push(index + 1);
                 } else {
-                    // Case-insensitive comparison with the correct answer
                     const userAnswer = input.value.trim();
+                    const correctAnswer = String(question.correctAnswer);
+                    const isCorrect = userAnswer.toLowerCase() === correctAnswer.toLowerCase();
                     userAnswers.push({
                         questionIndex: index,
                         type: questionType,
-                        answer: userAnswer,
-                        isCorrect: userAnswer.toLowerCase() === String(question.correctAnswer).toLowerCase()
+                        userAnswer,
+                        correctAnswer,
+                        isCorrect
                     });
-                    correctAnswers.push({
-                        type: questionType,
-                        answer: question.correctAnswer
-                    });
-                    if (userAnswer.toLowerCase() === String(question.correctAnswer).toLowerCase()) {
-                        score++;
-                    }
+                    if (isCorrect) score++;
                 }
             } else if (questionType === 'multiple-answer') {
-                // For multiple-answer questions, check checkboxes
                 const checkboxes = document.querySelectorAll(`input[name^="q${index}_opt"]`);
                 const selectedOptions = [];
                 let hasSelection = false;
-                
                 checkboxes.forEach((checkbox, optIndex) => {
                     if (checkbox.checked) {
                         hasSelection = true;
                         selectedOptions.push(optIndex);
                     }
                 });
-                
                 if (!hasSelection) {
                     unansweredQuestions.push(index + 1);
                 } else {
-                    // Check if selected options match correct answers
                     const correctAnswerIndices = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
-                    
-                    // Arrays must be the same length and contain the same elements (order doesn't matter)
-                    const isCorrect = selectedOptions.length === correctAnswerIndices.length && 
+                    const isCorrect = selectedOptions.length === correctAnswerIndices.length &&
                         selectedOptions.every(opt => correctAnswerIndices.includes(opt)) &&
                         correctAnswerIndices.every(opt => selectedOptions.includes(opt));
-                    
                     userAnswers.push({
                         questionIndex: index,
                         type: questionType,
-                        answer: selectedOptions.map(optIdx => question.options[optIdx]),
-                        selectedIndices: selectedOptions,
-                        isCorrect: isCorrect
+                        userAnswer: selectedOptions.map(optIdx => question.options[optIdx]),
+                        correctAnswer: correctAnswerIndices.map(optIdx => question.options[optIdx]),
+                        isCorrect
                     });
-                    
-                    correctAnswers.push({
-                        type: questionType,
-                        answer: correctAnswerIndices.map(optIdx => question.options[optIdx]),
-                        answerIndices: correctAnswerIndices
-                    });
-                    
-                    if (isCorrect) {
-                        score++;
-                    }
+                    if (isCorrect) score++;
                 }
             } else { // multiple-choice
-                // For multiple-choice questions, check radio buttons
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
                 if (!selected) {
                     unansweredQuestions.push(index + 1);
                 } else {
                     const selectedIndex = parseInt(selected.value);
                     const isCorrect = selectedIndex === question.correctAnswer;
-                    
                     userAnswers.push({
                         questionIndex: index,
                         type: questionType,
-                        answer: question.options[selectedIndex],
-                        selectedIndex: selectedIndex,
-                        isCorrect: isCorrect
+                        userAnswer: question.options[selectedIndex],
+                        correctAnswer: question.options[question.correctAnswer],
+                        isCorrect
                     });
-                    
-                    correctAnswers.push({
-                        type: questionType,
-                        answer: question.options[question.correctAnswer],
-                        answerIndex: question.correctAnswer
-                    });
-                    
-                    if (isCorrect) {
-                        score++;
-                    }
+                    if (isCorrect) score++;
                 }
             }
         });
@@ -466,7 +434,7 @@ async function handleQuizSubmit() {
         };
         
         try {
-            await saveQuizScore(window.currentLessonId, score, totalQuestions, percentage);
+            await saveQuizScore(window.currentLessonId, score, totalQuestions, percentage, userAnswers);
             
             // Close quiz modal
             document.getElementById('quiz-modal').style.display = 'none';
@@ -520,22 +488,22 @@ function displayResultsModal() {
         
         // Add user's answer based on question type
         if (question.type === 'identification') {
-            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer}</div>`;
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.userAnswer}</div>`;
             
             if (!userAnswer.isCorrect) {
-                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer}</div>`;
+                resultHTML += `<div class="correct-answer">Correct answer: ${userAnswer.correctAnswer}</div>`;
             }
         } else if (question.type === 'multiple-answer') {
-            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer.join(', ')}</div>`;
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.userAnswer.join(', ')}</div>`;
             
             if (!userAnswer.isCorrect) {
-                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer.join(', ')}</div>`;
+                resultHTML += `<div class="correct-answer">Correct answer: ${userAnswer.correctAnswer.join(', ')}</div>`;
             }
         } else { // multiple-choice
-            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer}</div>`;
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.userAnswer}</div>`;
             
             if (!userAnswer.isCorrect) {
-                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer}</div>`;
+                resultHTML += `<div class="correct-answer">Correct answer: ${userAnswer.correctAnswer}</div>`;
             }
         }
         
