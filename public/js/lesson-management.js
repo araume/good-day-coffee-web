@@ -578,9 +578,8 @@ function createQuizQuestionHTML(question = null, index = 0) {
         html += `
             <div class="form-group">
                 <label>Correct Answer</label>
-                <input type="text" name="correct_answer_${index}" class="identification-answer" 
-                    placeholder="Enter the correct answer" required 
-                    value="${question && question.correctAnswer ? question.correctAnswer : ''}">
+                <textarea name="correct_answer_${index}" class="identification-answer" 
+                    placeholder="Enter the correct answer" required rows="3">${question && question.correctAnswer ? question.correctAnswer : ''}</textarea>
             </div>
         `;
     } else if (questionType === 'multiple-answer') {
@@ -783,7 +782,7 @@ function removeQuestion(button) {
             typeInput.name = `question_type_${i}`;
             
             if (questionType === 'identification') {
-                const answerInput = q.querySelector('input[name^="correct_answer_"]');
+                const answerInput = q.querySelector('textarea[name^="correct_answer_"]');
                 answerInput.name = `correct_answer_${i}`;
             } else {
                 const optionsContainer = q.querySelector('.options-container');
@@ -797,7 +796,7 @@ function removeQuestion(button) {
                     updateRadioOptions(optionsContainer);
                 } else if (questionType === 'multiple-answer') {
                     updateCheckboxOptions(optionsContainer);
-    }
+                }
             }
         });
     }, 300);
@@ -819,7 +818,7 @@ function getQuizQuestions() {
         
         if (questionType === 'identification') {
             // Get the correct answer for identification questions
-            questionData.correctAnswer = q.querySelector(`input[name="correct_answer_${i}"]`).value;
+            questionData.correctAnswer = q.querySelector(`textarea[name="correct_answer_${i}"]`).value;
         } else if (questionType === 'multiple-choice') {
             // Get options and the selected correct answer for multiple choice
             const optionsContainer = q.querySelector(`.options-container[data-question="${i}"]`);

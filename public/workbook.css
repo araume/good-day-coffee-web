@@ -231,7 +231,7 @@ body{
     background-color: #FFF7F2;
     border-radius: 5px;
     border: 1px solid #eee;
-    min-height: 700px;
+    min-height: 300px;
 }
 
 .content-area h3 {
@@ -357,22 +357,25 @@ body{
 
 /* Text Input (Identification) */
 .identification-answer-container {
-    margin-top: 15px;
+    margin-top: 10px;
 }
 
 .identification-answer {
     width: 100%;
-    padding: 12px 15px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1em;
-    transition: all 0.3s;
+    min-height: 80px;
+    resize: vertical;
+    line-height: 1.4;
+    font-family: inherit;
 }
 
 .identification-answer:focus {
-    border-color: #2196f3;
     outline: none;
-    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.2);
+    border-color: burlywood;
+    box-shadow: 0 0 5px rgba(222, 184, 135, 0.5);
 }
 
 .previous-score-container {
@@ -415,9 +418,10 @@ body{
     }
     
     .question-type-badge {
-        top: 15px;
-        right: 15px;
         font-size: 0.7em;
+        padding: 3px 6px;
+        top: 10px;
+        right: 10px;
     }
     
     .radio-label,
@@ -427,10 +431,12 @@ body{
     
     .identification-answer {
         padding: 10px;
+        min-height: 60px;
     }
     
     #submit-quiz {
-        padding: 12px;
+        padding: 10px 20px;
+        font-size: 1em;
     }
 }
 

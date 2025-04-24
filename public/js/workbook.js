@@ -261,7 +261,7 @@ function displayQuizModal() {
         if (questionType === 'identification') {
             questionHTML += `
                 <div class="identification-answer-container">
-                    <input type="text" name="q${index}" class="identification-answer" placeholder="Type your answer here">
+                    <textarea name="q${index}" class="identification-answer" placeholder="Type your answer here" rows="3"></textarea>
                 </div>
             `;
         } else if (questionType === 'multiple-answer') {
@@ -338,7 +338,7 @@ async function handleQuizSubmit() {
             
             if (questionType === 'identification') {
                 // For identification questions, check text input
-                const input = document.querySelector(`input[name="q${index}"]`);
+                const input = document.querySelector(`textarea[name="q${index}"]`);
                 if (!input || !input.value.trim()) {
                     unansweredQuestions.push(index + 1);
                 } else {
