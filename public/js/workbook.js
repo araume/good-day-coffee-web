@@ -319,6 +319,17 @@ async function fetchPreviousScore(lessonId) {
     }
 }
 
+// Global variables to store quiz results
+window.quizResults = {
+    lessonTitle: '',
+    quizQuestions: [],
+    userAnswers: [],
+    correctAnswers: [],
+    score: 0,
+    totalQuestions: 0,
+    percentage: 0
+};
+
 // Function to handle quiz submission
 async function handleQuizSubmit() {
     try {
@@ -332,6 +343,8 @@ async function handleQuizSubmit() {
         
         // Check if all questions are answered
         let unansweredQuestions = [];
+        let userAnswers = [];
+        let correctAnswers = [];
         
         window.currentQuiz.forEach((question, index) => {
             const questionType = question.type || 'multiple-choice';
@@ -343,9 +356,18 @@ async function handleQuizSubmit() {
                     unansweredQuestions.push(index + 1);
                 } else {
                     // Case-insensitive comparison with the correct answer
-                    const userAnswer = input.value.trim().toLowerCase();
-                    const correctAnswer = String(question.correctAnswer).toLowerCase();
-                    if (userAnswer === correctAnswer) {
+                    const userAnswer = input.value.trim();
+                    userAnswers.push({
+                        questionIndex: index,
+                        type: questionType,
+                        answer: userAnswer,
+                        isCorrect: userAnswer.toLowerCase() === String(question.correctAnswer).toLowerCase()
+                    });
+                    correctAnswers.push({
+                        type: questionType,
+                        answer: question.correctAnswer
+                    });
+                    if (userAnswer.toLowerCase() === String(question.correctAnswer).toLowerCase()) {
                         score++;
                     }
                 }
@@ -366,12 +388,26 @@ async function handleQuizSubmit() {
                     unansweredQuestions.push(index + 1);
                 } else {
                     // Check if selected options match correct answers
-                    const correctAnswers = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
+                    const correctAnswerIndices = Array.isArray(question.correctAnswer) ? question.correctAnswer : [];
                     
                     // Arrays must be the same length and contain the same elements (order doesn't matter)
-                    const isCorrect = selectedOptions.length === correctAnswers.length && 
-                        selectedOptions.every(opt => correctAnswers.includes(opt)) &&
-                        correctAnswers.every(opt => selectedOptions.includes(opt));
+                    const isCorrect = selectedOptions.length === correctAnswerIndices.length && 
+                        selectedOptions.every(opt => correctAnswerIndices.includes(opt)) &&
+                        correctAnswerIndices.every(opt => selectedOptions.includes(opt));
+                    
+                    userAnswers.push({
+                        questionIndex: index,
+                        type: questionType,
+                        answer: selectedOptions.map(optIdx => question.options[optIdx]),
+                        selectedIndices: selectedOptions,
+                        isCorrect: isCorrect
+                    });
+                    
+                    correctAnswers.push({
+                        type: questionType,
+                        answer: correctAnswerIndices.map(optIdx => question.options[optIdx]),
+                        answerIndices: correctAnswerIndices
+                    });
                     
                     if (isCorrect) {
                         score++;
@@ -382,8 +418,27 @@ async function handleQuizSubmit() {
                 const selected = document.querySelector(`input[name="q${index}"]:checked`);
                 if (!selected) {
                     unansweredQuestions.push(index + 1);
-                } else if (parseInt(selected.value) === question.correctAnswer) {
-                    score++;
+                } else {
+                    const selectedIndex = parseInt(selected.value);
+                    const isCorrect = selectedIndex === question.correctAnswer;
+                    
+                    userAnswers.push({
+                        questionIndex: index,
+                        type: questionType,
+                        answer: question.options[selectedIndex],
+                        selectedIndex: selectedIndex,
+                        isCorrect: isCorrect
+                    });
+                    
+                    correctAnswers.push({
+                        type: questionType,
+                        answer: question.options[question.correctAnswer],
+                        answerIndex: question.correctAnswer
+                    });
+                    
+                    if (isCorrect) {
+                        score++;
+                    }
                 }
             }
         });
@@ -395,12 +450,29 @@ async function handleQuizSubmit() {
 
         const percentage = Math.round((score / totalQuestions) * 100);
         
+        // Get lesson title
+        const lesson = await fetchLesson(window.currentLessonId);
+        const lessonTitle = lesson ? lesson.title : 'Lesson';
+        
+        // Store results for PDF export
+        window.quizResults = {
+            lessonTitle,
+            quizQuestions: window.currentQuiz,
+            userAnswers,
+            correctAnswers,
+            score,
+            totalQuestions,
+            percentage
+        };
+        
         try {
             await saveQuizScore(window.currentLessonId, score, totalQuestions, percentage);
-            alert(`Quiz submitted! Your score: ${percentage}%`);
             
-            // Close modal
+            // Close quiz modal
             document.getElementById('quiz-modal').style.display = 'none';
+            
+            // Show results modal
+            displayResultsModal();
             
             // Refresh the dropdown to show updated score
             await populateLessonDropdown();
@@ -417,6 +489,220 @@ async function handleQuizSubmit() {
         console.error('Error handling quiz submission:', error);
         alert('An error occurred while submitting the quiz');
     }
+}
+
+// Function to display results modal
+function displayResultsModal() {
+    const resultsModal = document.getElementById('results-modal');
+    const quizResultsContainer = resultsModal.querySelector('.quiz-results');
+    const userScoreElement = document.getElementById('user-score');
+    
+    // Clear previous content
+    quizResultsContainer.innerHTML = '';
+    
+    // Set user score
+    userScoreElement.textContent = `${window.quizResults.score}/${window.quizResults.totalQuestions} (${window.quizResults.percentage}%)`;
+    
+    // Display each question and answer
+    window.quizResults.quizQuestions.forEach((question, index) => {
+        const userAnswer = window.quizResults.userAnswers.find(a => a.questionIndex === index);
+        if (!userAnswer) return;
+        
+        const resultItem = document.createElement('div');
+        resultItem.className = `result-item ${userAnswer.isCorrect ? 'correct' : 'incorrect'}`;
+        
+        let resultHTML = `
+            <div class="result-question">${index + 1}. ${question.question}</div>
+            <div class="result-status ${userAnswer.isCorrect ? 'correct-status' : 'incorrect-status'}">
+                ${userAnswer.isCorrect ? 'Correct' : 'Incorrect'}
+            </div>
+        `;
+        
+        // Add user's answer based on question type
+        if (question.type === 'identification') {
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer}</div>`;
+            
+            if (!userAnswer.isCorrect) {
+                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer}</div>`;
+            }
+        } else if (question.type === 'multiple-answer') {
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer.join(', ')}</div>`;
+            
+            if (!userAnswer.isCorrect) {
+                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer.join(', ')}</div>`;
+            }
+        } else { // multiple-choice
+            resultHTML += `<div class="result-answer">Your answer: ${userAnswer.answer}</div>`;
+            
+            if (!userAnswer.isCorrect) {
+                resultHTML += `<div class="correct-answer">Correct answer: ${window.quizResults.correctAnswers[index].answer}</div>`;
+            }
+        }
+        
+        resultItem.innerHTML = resultHTML;
+        quizResultsContainer.appendChild(resultItem);
+    });
+    
+    // Display the modal
+    resultsModal.style.display = 'block';
+}
+
+// Function to generate and export PDF
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    
+    // Create a new PDF document
+    const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+    });
+    
+    // PDF styling variables
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+    const contentWidth = pageWidth - (margin * 2);
+    let yPos = margin;
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Quiz Results', pageWidth / 2, yPos, { align: 'center' });
+    yPos += 10;
+    
+    // Add lesson title
+    doc.setFontSize(14);
+    doc.text(`Lesson: ${window.quizResults.lessonTitle}`, pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+    
+    // Add score summary
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    const scoreText = `Score: ${window.quizResults.score}/${window.quizResults.totalQuestions} (${window.quizResults.percentage}%)`;
+    doc.text(scoreText, pageWidth / 2, yPos, { align: 'center' });
+    yPos += 15;
+    
+    // Add date
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'normal');
+    const currentDate = new Date().toLocaleDateString();
+    doc.text(`Date: ${currentDate}`, margin, yPos);
+    yPos += 15;
+    
+    // Draw line
+    doc.setDrawColor(200, 200, 200);
+    doc.line(margin, yPos - 5, pageWidth - margin, yPos - 5);
+    
+    // Add questions and answers
+    doc.setFontSize(12);
+    
+    window.quizResults.quizQuestions.forEach((question, index) => {
+        const userAnswer = window.quizResults.userAnswers.find(a => a.questionIndex === index);
+        if (!userAnswer) return;
+        
+        // Check if we need a new page
+        if (yPos > pageHeight - 60) {
+            doc.addPage();
+            yPos = margin;
+        }
+        
+        // Add question
+        doc.setFont('helvetica', 'bold');
+        const questionText = `${index + 1}. ${question.question}`;
+        const questionLines = doc.splitTextToSize(questionText, contentWidth);
+        doc.text(questionLines, margin, yPos);
+        yPos += 7 * questionLines.length;
+        
+        // Add question type
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'italic');
+        doc.text(`Type: ${formatQuestionType(question.type)}`, margin, yPos);
+        yPos += 7;
+        
+        // Add user's answer
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'normal');
+        
+        let userAnswerText = '';
+        if (question.type === 'identification') {
+            userAnswerText = `Your answer: ${userAnswer.answer}`;
+        } else if (question.type === 'multiple-answer') {
+            userAnswerText = `Your answer: ${userAnswer.answer.join(', ')}`;
+        } else { // multiple-choice
+            userAnswerText = `Your answer: ${userAnswer.answer}`;
+        }
+        
+        const userAnswerLines = doc.splitTextToSize(userAnswerText, contentWidth);
+        doc.text(userAnswerLines, margin, yPos);
+        yPos += 7 * userAnswerLines.length;
+        
+        // Add correct/incorrect status
+        if (userAnswer.isCorrect) {
+            doc.setTextColor(76, 175, 80); // Green
+            doc.text('✓ Correct', margin, yPos);
+        } else {
+            doc.setTextColor(244, 67, 54); // Red
+            doc.text('✗ Incorrect', margin, yPos);
+            yPos += 7;
+            
+            // Add correct answer
+            let correctAnswerText = '';
+            if (question.type === 'identification') {
+                correctAnswerText = `Correct answer: ${window.quizResults.correctAnswers[index].answer}`;
+            } else if (question.type === 'multiple-answer') {
+                correctAnswerText = `Correct answer: ${window.quizResults.correctAnswers[index].answer.join(', ')}`;
+            } else { // multiple-choice
+                correctAnswerText = `Correct answer: ${window.quizResults.correctAnswers[index].answer}`;
+            }
+            
+            const correctAnswerLines = doc.splitTextToSize(correctAnswerText, contentWidth);
+            doc.text(correctAnswerLines, margin, yPos);
+            yPos += 7 * correctAnswerLines.length;
+        }
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        yPos += 10;
+    });
+    
+    // Add footer
+    const footerText = 'Good Day Coffee - Quiz Results Report';
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'italic');
+    doc.text(footerText, pageWidth / 2, pageHeight - 10, { align: 'center' });
+    
+    // Save the PDF
+    const fileName = `${window.quizResults.lessonTitle.replace(/\s+/g, '_')}_Quiz_Results.pdf`;
+    doc.save(fileName);
+}
+
+// Modal interactions for the results modal
+function setupResultsModalInteractions() {
+    const resultsModal = document.getElementById('results-modal');
+    const closeButton = resultsModal.querySelector('.close-modal');
+    const closeResultsButton = document.getElementById('close-results');
+    const exportPdfButton = document.getElementById('export-pdf');
+    
+    // Close modal when clicking X
+    closeButton.addEventListener('click', () => {
+        resultsModal.style.display = 'none';
+    });
+    
+    // Close modal when clicking close button
+    closeResultsButton.addEventListener('click', () => {
+        resultsModal.style.display = 'none';
+    });
+    
+    // Export to PDF when clicking export button
+    exportPdfButton.addEventListener('click', exportToPDF);
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', (event) => {
+        if (event.target === resultsModal) {
+            resultsModal.style.display = 'none';
+        }
+    });
 }
 
 // Modal interactions
@@ -464,6 +750,7 @@ async function initializeWorkbook() {
         
         // Set up modal interactions
         setupModalInteractions();
+        setupResultsModalInteractions();
         
     } catch (error) {
         console.error('Error initializing workbook:', error);

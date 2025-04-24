@@ -512,7 +512,7 @@ function showModal(title, lesson = null) {
             createLesson(lessonData);
         }
     });
-    
+
     // Handle close button
     modal.querySelector('.close').addEventListener('click', closeModal);
     
@@ -796,7 +796,7 @@ function removeQuestion(button) {
                     updateRadioOptions(optionsContainer);
                 } else if (questionType === 'multiple-answer') {
                     updateCheckboxOptions(optionsContainer);
-                }
+    }
             }
         });
     }, 300);
